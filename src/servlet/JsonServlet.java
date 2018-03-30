@@ -125,9 +125,6 @@ public class JsonServlet extends HttpServlet {
 
         response.setContentType("application/x-javascript; charset=utf-8");
         PrintWriter pw = response.getWriter();
-        JSONObject responseJsonObject = new JSONObject();
-//        responseJsonObject.accumulate()
-//        responseJsonObject.addProperty("password", responseJsonObject.get("password").toString());
         pw.write(jsonObject.toString());
         pw.flush();
         pw.close();
