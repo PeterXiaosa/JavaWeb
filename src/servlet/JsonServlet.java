@@ -3,8 +3,6 @@ package servlet;
 import bean.NewTotal;
 import bean.News;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import net.sf.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -17,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,10 +89,56 @@ public class JsonServlet extends HttpServlet {
         Gson gson = new Gson();
         String json = gson.toJson(nt);
 
+        String url = "jdbc:mysql://localhost:3306/playappserver";
+        String user = "root";
+        String password = "root";
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection(url, user, password);
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT * FROM user;");
+
+            while (resultSet.next()){
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("account");
+                String a = resultSet.getString("password");
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (resultSet != null){
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                resultSet = null;
+            }
+            if (statement != null){
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                statement = null;
+            }
+            if (connection != null){
+                try {
+                    connection.close();
+                }catch (SQLException e){
+                    e.printStackTrace();
+                }
+                connection = null;
+            }
+        }
+
         // 输出到界面
         System.out.println(json);
         resp.setContentType("application/json;charset=gb2312");
-//        resp.setCharacterEncoding("gb2312");
         PrintWriter out = new PrintWriter(resp.getOutputStream());
         out.print(json);
         out.flush();
@@ -103,10 +148,7 @@ public class JsonServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //        this.doGet(req, resp);
-        String requestUrl = request.getRequestURL().toString();
-        String requestURI = request.getRequestURI();
-        String queryString = request.getQueryString();
-        String queryIP = request.getRemoteAddr();
+        // getParameterMap获取url中的参数
         Map<String, String[]> qc = request.getParameterMap();
         String user = request.getParameter("name");
         String password = request.getParameter("password");
@@ -120,8 +162,6 @@ public class JsonServlet extends HttpServlet {
         String params = sb.toString();
 
         JSONObject jsonObject = JSONObject.fromObject(params);
-
-        String abc = request.getMethod();
 
         response.setContentType("application/x-javascript; charset=utf-8");
         PrintWriter pw = response.getWriter();
