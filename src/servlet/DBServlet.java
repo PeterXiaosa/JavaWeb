@@ -22,7 +22,8 @@ public class DBServlet extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doGet(req, resp);
-        String url = "jdbc:mysql://localhost:3306/playappserver";
+//        String url = "jdbc:mysql://localhost:3306/playappserver";
+        String url = "jdbc:mysql://47.100.210.98:3306/mydbsystem";
         String user = "root";
         String password = "root";
         Connection connection = null;
@@ -32,17 +33,17 @@ public class DBServlet extends HttpServlet{
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection(url, user, password);
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM user;");
+            resultSet = statement.executeQuery("SELECT * FROM UsersInfo;");
 
             JSONArray jsonArray = new JSONArray();
 
             while (resultSet.next()){
                 JSONObject jsonObject = new JSONObject();
-                int id = resultSet.getInt("id");
-                String account = resultSet.getString("account");
+                int id = resultSet.getInt("userId");
+                String account = resultSet.getString("phone");
                 String name = resultSet.getString("password");
-                jsonObject.put("id", id);
-                jsonObject.put("account", account);
+                jsonObject.put("userId", id);
+                jsonObject.put("phone", account);
                 jsonObject.put("password", name);
                 jsonArray.add(jsonObject);
             }
@@ -62,7 +63,6 @@ public class DBServlet extends HttpServlet{
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                resultSet = null;
             }
             if (statement != null){
                 try {
@@ -70,7 +70,6 @@ public class DBServlet extends HttpServlet{
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                statement = null;
             }
             if (connection != null){
                 try {
@@ -78,7 +77,6 @@ public class DBServlet extends HttpServlet{
                 }catch (SQLException e){
                     e.printStackTrace();
                 }
-                connection = null;
             }
         }
     }
@@ -88,8 +86,9 @@ public class DBServlet extends HttpServlet{
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //        super.doPost(req, resp);
         JSONObject requestJson;
-         requestJson = getDataFromRequest(request);
-        String url = "jdbc:mysql://localhost:3306/playappserver";
+        requestJson = getDataFromRequest(request);
+//        String url = "jdbc:mysql://localhost:3306/playappserver";
+        String url = "jdbc:mysql://47.100.210.98:3306/mydbsystem";
         String user = "root";
         String password = "root";
         Connection connection = null;
@@ -100,7 +99,7 @@ public class DBServlet extends HttpServlet{
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection(url, user, password);
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM user;");
+            resultSet = statement.executeQuery("SELECT * FROM UsersInfo;");
             PreparedStatement pstmt1=null;
             int number = 0;
 
@@ -109,7 +108,7 @@ public class DBServlet extends HttpServlet{
             }
 //            String sqlAdd = "INSERT INTO user VALUES ('%d','%s',%s)";
 
-            String sqlAdd = String.format("INSERT INTO `playappserver`.`user` (`id`, `account`, `password`) VALUES ('%d', '%s', '%s');", number+1, requestJson.get("account"), requestJson.get("password"));
+            String sqlAdd = String.format("INSERT INTO `mydbsystem`.`UsersInfo` (`userId`, `phone`, `password`) VALUES ('%d', '%s', '%s');", number+1, requestJson.get("phone"), requestJson.get("password"));
             pstmt1 = connection.prepareStatement(sqlAdd);
             pstmt1.executeUpdate();
 
@@ -122,7 +121,6 @@ public class DBServlet extends HttpServlet{
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                resultSet = null;
             }
             if (statement != null){
                 try {
@@ -130,7 +128,6 @@ public class DBServlet extends HttpServlet{
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                statement = null;
             }
             if (connection != null){
                 try {
@@ -138,7 +135,6 @@ public class DBServlet extends HttpServlet{
                 }catch (SQLException e){
                     e.printStackTrace();
                 }
-                connection = null;
             }
         }
     }
