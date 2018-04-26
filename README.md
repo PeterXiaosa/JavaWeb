@@ -18,7 +18,7 @@
 * request parameter:  
  `phone`: phone to login  
  `password`: password to login
-* eg: {"phone":"12345678901", "password":"111111"}
+* eg: `{"phone":"12345678901", "password":"111111"}`
 
 ### /contact
 * request way: post
@@ -28,5 +28,5 @@
  `phone`: phone of login.  
  `contactName`: needed when action is 1. The name of insert people.  
  `contactPhone`: needed when action is 1. The phone of insert people.
-* eg: {"action":"0", "phone":"12345678901"}  
-{"action":"1", "phone":"12345678901", "contactName":"Peter", "contactPhone":"13245678909"}
+* eg: `{"action":"0", "phone":"12345678901"}  `
+`{"action":"1", "phone":"12345678901", "contactName":"Peter", "contactPhone":"13245678909"}`
