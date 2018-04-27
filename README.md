@@ -18,7 +18,7 @@
 * phone: phone to login  
 * password: password to login  
 * eg: {"phone":"12345678901", "password":"111111"}  
-* ###/contact  
+###/contact  
 * request way: post  
 * data structure: json  
 * request parameter:  
