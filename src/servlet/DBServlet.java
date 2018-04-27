@@ -2,6 +2,7 @@ package servlet;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import util.DBConnectionUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -30,8 +31,7 @@ public class DBServlet extends HttpServlet{
         Statement statement = null;
         ResultSet resultSet = null;
         try{
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DBConnectionUtil.getConnection();
             statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT * FROM UsersInfo;");
 
@@ -39,11 +39,11 @@ public class DBServlet extends HttpServlet{
 
             while (resultSet.next()){
                 JSONObject jsonObject = new JSONObject();
-                int id = resultSet.getInt("userId");
-                String account = resultSet.getString("phone");
+                int userId = resultSet.getInt("userId");
+                String phone = resultSet.getString("phone");
                 String name = resultSet.getString("password");
-                jsonObject.put("userId", id);
-                jsonObject.put("phone", account);
+                jsonObject.put("userId", user);
+                jsonObject.put("phone", phone);
                 jsonObject.put("password", name);
                 jsonArray.add(jsonObject);
             }
@@ -63,6 +63,7 @@ public class DBServlet extends HttpServlet{
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                resultSet = null;
             }
             if (statement != null){
                 try {
@@ -70,6 +71,7 @@ public class DBServlet extends HttpServlet{
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                statement = null;
             }
             if (connection != null){
                 try {
@@ -77,6 +79,7 @@ public class DBServlet extends HttpServlet{
                 }catch (SQLException e){
                     e.printStackTrace();
                 }
+                connection = null;
             }
         }
     }
@@ -86,9 +89,8 @@ public class DBServlet extends HttpServlet{
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //        super.doPost(req, resp);
         JSONObject requestJson;
-        requestJson = getDataFromRequest(request);
-//        String url = "jdbc:mysql://localhost:3306/playappserver";
-        String url = "jdbc:mysql://47.100.210.98:3306/mydbsystem";
+         requestJson = getDataFromRequest(request);
+        String url = "jdbc:mysql://localhost:3306/playappserver";
         String user = "root";
         String password = "root";
         Connection connection = null;
@@ -99,16 +101,15 @@ public class DBServlet extends HttpServlet{
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection(url, user, password);
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM UsersInfo;");
+            resultSet = statement.executeQuery("SELECT * FROM user;");
             PreparedStatement pstmt1=null;
             int number = 0;
 
             while (resultSet.next()){
                 number++;
             }
-//            String sqlAdd = "INSERT INTO user VALUES ('%d','%s',%s)";
 
-            String sqlAdd = String.format("INSERT INTO `mydbsystem`.`UsersInfo` (`userId`, `phone`, `password`) VALUES ('%d', '%s', '%s');", number+1, requestJson.get("phone"), requestJson.get("password"));
+            String sqlAdd = String.format("INSERT INTO `playappserver`.`user` (`id`, `account`, `password`) VALUES ('%d', '%s', '%s');", number+1, requestJson.get("account"), requestJson.get("password"));
             pstmt1 = connection.prepareStatement(sqlAdd);
             pstmt1.executeUpdate();
 
@@ -121,6 +122,7 @@ public class DBServlet extends HttpServlet{
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                resultSet = null;
             }
             if (statement != null){
                 try {
@@ -128,6 +130,7 @@ public class DBServlet extends HttpServlet{
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                statement = null;
             }
             if (connection != null){
                 try {
@@ -135,6 +138,7 @@ public class DBServlet extends HttpServlet{
                 }catch (SQLException e){
                     e.printStackTrace();
                 }
+                connection = null;
             }
         }
     }

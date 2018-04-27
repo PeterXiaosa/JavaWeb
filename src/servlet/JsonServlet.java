@@ -89,7 +89,7 @@ public class JsonServlet extends HttpServlet {
         Gson gson = new Gson();
         String json = gson.toJson(nt);
 
-        String url = "jdbc:mysql://47.100.210.98:3306/mydbsystem";
+        String url = "jdbc:mysql://localhost:3306/playappserver";
         String user = "root";
         String password = "root";
         Connection connection = null;
@@ -99,11 +99,11 @@ public class JsonServlet extends HttpServlet {
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection(url, user, password);
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM UsersInfo;");
+            resultSet = statement.executeQuery("SELECT * FROM user;");
 
             while (resultSet.next()){
-                int id = resultSet.getInt("userId");
-                String name = resultSet.getString("phone");
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("account");
                 String a = resultSet.getString("password");
             }
 
@@ -116,6 +116,7 @@ public class JsonServlet extends HttpServlet {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                resultSet = null;
             }
             if (statement != null){
                 try {
@@ -123,6 +124,7 @@ public class JsonServlet extends HttpServlet {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                statement = null;
             }
             if (connection != null){
                 try {
@@ -130,6 +132,7 @@ public class JsonServlet extends HttpServlet {
                 }catch (SQLException e){
                     e.printStackTrace();
                 }
+                connection = null;
             }
         }
 
