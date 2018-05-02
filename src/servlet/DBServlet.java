@@ -2,6 +2,7 @@ package servlet;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import util.DBConnectionUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -22,27 +23,27 @@ public class DBServlet extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doGet(req, resp);
-        String url = "jdbc:mysql://localhost:3306/playappserver";
+//        String url = "jdbc:mysql://localhost:3306/playappserver";
+        String url = "jdbc:mysql://47.100.210.98:3306/mydbsystem";
         String user = "root";
         String password = "root";
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
         try{
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DBConnectionUtil.getConnection();
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM user;");
+            resultSet = statement.executeQuery("SELECT * FROM UsersInfo;");
 
             JSONArray jsonArray = new JSONArray();
 
             while (resultSet.next()){
                 JSONObject jsonObject = new JSONObject();
-                int id = resultSet.getInt("id");
-                String account = resultSet.getString("account");
+                int userId = resultSet.getInt("userId");
+                String phone = resultSet.getString("phone");
                 String name = resultSet.getString("password");
-                jsonObject.put("id", id);
-                jsonObject.put("account", account);
+                jsonObject.put("userId", user);
+                jsonObject.put("phone", phone);
                 jsonObject.put("password", name);
                 jsonArray.add(jsonObject);
             }
@@ -107,7 +108,6 @@ public class DBServlet extends HttpServlet{
             while (resultSet.next()){
                 number++;
             }
-//            String sqlAdd = "INSERT INTO user VALUES ('%d','%s',%s)";
 
             String sqlAdd = String.format("INSERT INTO `playappserver`.`user` (`id`, `account`, `password`) VALUES ('%d', '%s', '%s');", number+1, requestJson.get("account"), requestJson.get("password"));
             pstmt1 = connection.prepareStatement(sqlAdd);

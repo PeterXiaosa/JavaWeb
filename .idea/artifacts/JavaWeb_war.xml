@@ -1,0 +1,28 @@
+<component name="ArtifactManager">
+  <artifact type="war" build-on-make="true" name="JavaWeb:war">
+    <output-path>$PROJECT_DIR$/out/artifacts/JavaWeb_war</output-path>
+    <root id="archive" name="JavaWeb_war.war">
+      <element id="artifact" artifact-name="JavaWeb:war exploded" />
+      <element id="dir-copy" path="$PROJECT_DIR$/web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="lib">
+          <element id="file-copy" path="$PROJECT_DIR$/web/lib/gson-2.6.2.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/web/lib/ezmorph-1.0.6.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/web/lib/commons-lang-2.6.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/web/lib/json-lib-2.4-jdk15.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/web/lib/commons-logging-1.2.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/web/lib/commons-beanutils-1.9.3.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/web/lib/javax.servlet-api-3.0.1.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/web/lib/commons-collections-3.2.2.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/web/lib/mysql-connector-java-5.1.46.jar" />
+          <element id="library" level="project" name="com.google.code.gson:gson:2.6.2" />
+          <element id="library" level="project" name="gson-2.6.2" />
+          <element id="library" level="project" name="json-lib-2.4-jdk15" />
+          <element id="library" level="project" name="commons-beanutils-1.9.3" />
+          <element id="library" level="project" name="commons-beanutils-1.9.3 (2)" />
+          <element id="library" level="project" name="mysql-connector-java-5.1.46" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
