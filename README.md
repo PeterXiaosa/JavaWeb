@@ -11,14 +11,14 @@
 1. Response the json to client.
 2. Response picture from database to client. (unfinished)
 
-###/register
+### /register
 * request way: post  
 * data structure: json  
 * request parameter:  
 * phone: phone to login  
 * password: password to login  
 * eg: {"phone":"12345678901", "password":"111111"}  
-###/contact  
+### /contact  
 * request way: post  
 * data structure: json  
 * request parameter:  
