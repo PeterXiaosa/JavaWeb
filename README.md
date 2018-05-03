@@ -19,8 +19,9 @@
 2. `password`: password to login  
 * eg: `{"phone":"12345678901", "password":"111111"}` 
 * response parameter:
-1. `statuscode`: 0 is successful, 1 is fail.
-2. `content`: error text
+1. `status`: 0 is successful, 1 is fail. 200
+2. `msg`: error text
+4. `data`: json object.
 
 ### /contact  
 * request way: post  
