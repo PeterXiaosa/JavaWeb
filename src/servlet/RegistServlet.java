@@ -1,5 +1,8 @@
 package servlet;
 
+import Dao.UserDao;
+import bean.UserInfo;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.sf.json.JSONObject;
 import util.BaseUtil;
@@ -20,7 +23,7 @@ import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@WebServlet("/register")
+@WebServlet("/user/register")
 public class RegistServlet extends HttpServlet{
 
     @Override
@@ -30,51 +33,41 @@ public class RegistServlet extends HttpServlet{
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Connection connection = DBConnectionUtil.getConnection();
-        Statement statement = null;
+
         JSONObject responseJson = new JSONObject();
         try {
-            statement = connection.createStatement();
-            // 将传入的数据变成json
+            // 获取Client端数据
             JSONObject requestJson = BaseUtil.getDataFromRequest(request);
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM UsersInfo");
-            int number= 0;
-            String phone, requestPhone;
-            requestPhone = (String) requestJson.get("phone");
-            boolean isCanInsertData = true;
+            Gson gson = new Gson();
+            UserInfo userInfo = gson.fromJson(requestJson.toString(), UserInfo.class);
 
-            while (resultSet.next()){
-                number++;
-                phone = resultSet.getString("phone");
-                if (requestPhone.equals(phone)){
-                    isCanInsertData = false;
-                    break;
-                }
-            }
-            if (isCanInsertData) {
-                if (BaseUtil.isPhone(requestPhone)) {
-                    String passwordToDatabase = MD5Util.md5Password((String) requestJson.get("password"));
-                    String sqlAdd = String.format("INSERT INTO `mydbsystem`.`UsersInfo` (`userId`, `phone`, `password`) VALUES ('%d', '%s', '%s');",
-                            number + 1, requestJson.get("phone"), passwordToDatabase);
-                    PreparedStatement preparedStatement = connection.prepareStatement(sqlAdd);
-                    preparedStatement.executeUpdate();
-
+            if (UserDao.isUserLegal(userInfo)) {
+                if (!UserDao.checkUser(userInfo)) {
+                    // 注册用户
+                    UserDao.addUser(userInfo);
                     responseJson.put("status", 0);
-                    responseJson.put("msg", requestPhone);
-                }else {
-                    responseJson.put("status", 1);
-                    responseJson.put("msg", "手机号不合法");
+                    responseJson.put("msg", "注册成功");
+                } else {
+                    // 此用户已存在
+                    responseJson.put("status", 10010);
+                    responseJson.put("msg", "该账号已存在");
                 }
             }else {
-                responseJson.put("status", 1);
-                responseJson.put("msg", "该手机号已注册");
+                responseJson.put("status", 10001);
+                responseJson.put("msg", "Post参数错误");
             }
+
 
         } catch (SQLException e) {
             e.printStackTrace();
-            responseJson.put("status", 1);
-            responseJson.put("msg", "数据插入数据库失败");
-        }finally {
+            responseJson.put("status", 20001);
+            responseJson.put("msg", "数据库操作失败");
+        }catch (Exception e){
+            e.printStackTrace();
+            responseJson.put("status", 20000);
+            responseJson.put("msg", "未知错误");
+        }
+        finally {
             PrintWriter printWriter = response.getWriter();
             printWriter.print(responseJson.toString());
             printWriter.flush();

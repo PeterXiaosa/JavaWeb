@@ -1,5 +1,7 @@
 package servlet;
 
+import bean.UserInfo;
+import com.google.gson.Gson;
 import net.sf.json.JSONObject;
 import util.BaseUtil;
 import util.DBConnectionUtil;
@@ -17,7 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-@WebServlet("/login")
+@WebServlet("/user/login")
 public class LoginServlet extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -25,31 +27,32 @@ public class LoginServlet extends HttpServlet{
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Connection connection = DBConnectionUtil.getConnection();
+    protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
+
         Statement statement = null;
         JSONObject responseJson = new JSONObject();
         boolean isLeagleAccount = false;
 
         try{
+            Connection connection = DBConnectionUtil.getConnection();
             statement = connection.createStatement();
-            // 将传入的数据变成json
-            JSONObject requestJson = BaseUtil.getDataFromRequest(req);
+            // 获取Client端数据
+            JSONObject requestJson = BaseUtil.getDataFromRequest(request);
 
-            String account = requestJson.getString("phone");
-            String password = requestJson.getString("password");
-            String md5Password = MD5Util.md5Password(password);
+            Gson gson = new Gson();
+            UserInfo userInfo = gson.fromJson(requestJson.toString(), UserInfo.class);
+
 
             String sql = "SELECT password FROM UsersInfo WHERE phone = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, account);
-            ResultSet resultSet1 = preparedStatement.executeQuery();
-            while (resultSet1.next()){
-                if (md5Password.equals(resultSet1.getString("password"))){
-                    isLeagleAccount = true;
-                    break;
-                }
-            }
+//            preparedStatement.setString(1, account);
+            ResultSet resultSetif1 = preparedStatement.executeQuery();
+//            while (resultSet1.next()){
+//                if (md5Password.equals(resultSet1.getString("password"))){
+//                    isLeagleAccount = true;
+//                    break;
+//                }
+//            }
             if (isLeagleAccount){
                 responseJson = new JSONObject();
                 responseJson.put("statuscode", 0);

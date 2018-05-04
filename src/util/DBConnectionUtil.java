@@ -1,9 +1,6 @@
 package util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class DBConnectionUtil {
     private static final String DBDRIVER = "com.mysql.jdbc.Driver";
@@ -11,16 +8,10 @@ public class DBConnectionUtil {
     private static final String DBUSER = "root";
     private static final String DBPASSWORD = "root";
 
-    public static Connection getConnection(){
+    public static Connection getConnection() throws Exception{
         Connection conn = null;
-        try {
-            Class.forName(DBDRIVER);
-            conn = DriverManager.getConnection(DBURL, DBUSER, DBPASSWORD);
-        }catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+        Class.forName(DBDRIVER);
+        conn = DriverManager.getConnection(DBURL, DBUSER, DBPASSWORD);
         return conn;
     }
 
@@ -40,6 +31,66 @@ public class DBConnectionUtil {
                 resultSet.close();
             }catch (SQLException e){
                 e.printStackTrace();
+            }
+        }
+    }
+
+    public static void close(Statement statement, Connection connection) throws Exception{
+        if (statement != null){
+            statement.close();
+            if (connection != null){
+                connection.close();
+            }
+        }
+    }
+
+    /**
+     * 关闭连接
+     * @param cstmt
+     * @param conn
+     * @throws Exception
+     */
+    public static void close(CallableStatement cstmt, Connection conn) throws Exception{
+        if(cstmt!=null){
+            cstmt.close();
+            if(conn!=null){
+                conn.close();
+            }
+        }
+    }
+
+
+    /**
+     * 关闭连接
+     * @param pstmt
+     * @param conn
+     * @throws SQLException
+     */
+    public static void close(PreparedStatement pstmt, Connection conn) throws SQLException{
+        if(pstmt!=null){
+            pstmt.close();
+            if(conn!=null){
+                conn.close();
+            }
+        }
+    }
+
+
+    /**
+     * 重载关闭方法
+     * @param pstmt
+     * @param conn
+     * @throws Exception
+     */
+    public void close(ResultSet rs,PreparedStatement pstmt, Connection conn) throws Exception{
+        if(rs!=null){
+            rs.close();
+            if(pstmt!=null){
+                pstmt.close();
+                if(conn!=null){
+                    conn.close();
+                }
+
             }
         }
     }

@@ -27,11 +27,12 @@ public class ContactServlet extends HttpServlet{
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
-        Connection connection = DBConnectionUtil.getConnection();
+
         Statement statement = null;
         JSONObject responseJson = new JSONObject();
 
         try {
+            Connection connection = DBConnectionUtil.getConnection();
             statement = connection.createStatement();
             JSONObject requestJson = BaseUtil.getDataFromRequest(req);
             String userPhone = (String) requestJson.get("phone");

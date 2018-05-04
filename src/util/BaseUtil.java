@@ -39,4 +39,8 @@ public class BaseUtil {
         Matcher m = p.matcher(inputText);
         return m.matches();
     }
+
+//    public static String generateSignature(String account, String password, String deviceId, String genKey){
+//
+//    }
 }
