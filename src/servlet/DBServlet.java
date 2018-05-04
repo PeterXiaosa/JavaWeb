@@ -16,6 +16,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.sql.*;
 
+import static util.BaseUtil.getJsonObject;
+
 @WebServlet("/getAccount")
 public class DBServlet extends HttpServlet{
 
@@ -144,25 +146,6 @@ public class DBServlet extends HttpServlet{
     }
 
     private JSONObject getDataFromRequest(HttpServletRequest request) {
-        JSONObject jsonObject;
-
-        BufferedReader br = null;
-        StringBuffer sb = null;
-        try {
-            br = new BufferedReader(new InputStreamReader((ServletInputStream) request.getInputStream(), "utf-8"));
-            sb = new StringBuffer("");
-            String temp;
-            while ((temp = br.readLine()) != null) {
-                sb.append(temp);
-            }
-            br.close();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String params = sb.toString();
-        jsonObject = JSONObject.fromObject(params);
-        return jsonObject;
+        return getJsonObject(request);
     }
 }

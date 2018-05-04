@@ -82,7 +82,7 @@ public class DBConnectionUtil {
      * @param conn
      * @throws Exception
      */
-    public void close(ResultSet rs,PreparedStatement pstmt, Connection conn) throws Exception{
+    public static void close(ResultSet rs,PreparedStatement pstmt, Connection conn) throws Exception{
         if(rs!=null){
             rs.close();
             if(pstmt!=null){

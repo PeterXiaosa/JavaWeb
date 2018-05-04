@@ -6,7 +6,6 @@ import util.DBConnectionUtil;
 import java.sql.*;
 
 public class UserDao {
-    private static DBConnectionUtil dbUtil = new DBConnectionUtil();
 
     public static int addUser(UserInfo userInfo) throws Exception{
         Connection conn = DBConnectionUtil.getConnection();
@@ -18,6 +17,9 @@ public class UserDao {
         psmt.setString(3, userInfo.getPassword());
         psmt.setString(4, userInfo.getGenkey());
         int result = psmt.executeUpdate();
+
+        DBConnectionUtil.close(psmt, conn);
+
         return result;
     }
 
@@ -29,6 +31,8 @@ public class UserDao {
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, account);
         ResultSet result = pstmt.executeQuery();
+
+        DBConnectionUtil.close(result, pstmt, conn);
         if (result.next()){
             return true;
         }else {
@@ -47,6 +51,8 @@ public class UserDao {
         while (resultSet.next()){
             count= resultSet.getInt(1);
         }
+
+        DBConnectionUtil.close(resultSet, pstmt, conn);
         return count;
     }
 
@@ -61,6 +67,7 @@ public class UserDao {
         if (resultSet.next()){
             genkey = resultSet.getString("genkey");
         }
+        DBConnectionUtil.close(resultSet, pstmt, conn);
         return genkey;
     }
 
@@ -74,4 +81,38 @@ public class UserDao {
             return false;
         }
     }
+
+    public static boolean checkPasswordIsRight(UserInfo userInfo) throws Exception{
+        String password = "";
+        Connection conn = DBConnectionUtil.getConnection();
+
+        String sql = "SELECT password FROM UserInfoTest WHERE account = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, userInfo.getAccount());
+        ResultSet resultSet = pstmt.executeQuery();
+        if (resultSet.next()){
+            password = resultSet.getString("password");
+        }
+
+        DBConnectionUtil.close(resultSet, pstmt, conn);
+        if (password.equals(userInfo.getPassword())){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public static int updaeUserInfoAfterLogin(UserInfo userInfo) throws Exception{
+        Connection conn = DBConnectionUtil.getConnection();
+        String sql = "UPDATE UserInfoTest SET deviceid = ?, genkey = ? WHERE account = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, userInfo.getDeviceId());
+        pstmt.setString(2, userInfo.getGenkey());
+        pstmt.setString(3, userInfo.getAccount());
+        int result = pstmt.executeUpdate();
+        DBConnectionUtil.close(pstmt, conn);
+        return result;
+    }
+
+
 }

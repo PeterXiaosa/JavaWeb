@@ -1,5 +1,6 @@
 package servlet;
 
+import Dao.UserDao;
 import bean.UserInfo;
 import com.google.gson.Gson;
 import net.sf.json.JSONObject;
@@ -34,47 +35,31 @@ public class LoginServlet extends HttpServlet{
         boolean isLeagleAccount = false;
 
         try{
-            Connection connection = DBConnectionUtil.getConnection();
-            statement = connection.createStatement();
             // 获取Client端数据
             JSONObject requestJson = BaseUtil.getDataFromRequest(request);
 
             Gson gson = new Gson();
             UserInfo userInfo = gson.fromJson(requestJson.toString(), UserInfo.class);
 
-
-            String sql = "SELECT password FROM UsersInfo WHERE phone = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-//            preparedStatement.setString(1, account);
-            ResultSet resultSetif1 = preparedStatement.executeQuery();
-//            while (resultSet1.next()){
-//                if (md5Password.equals(resultSet1.getString("password"))){
-//                    isLeagleAccount = true;
-//                    break;
-//                }
-//            }
-            if (isLeagleAccount){
-                responseJson = new JSONObject();
-                responseJson.put("statuscode", 0);
-                responseJson.put("content", "登录成功");
-                PrintWriter printWriter = resp.getWriter();
-                printWriter.print(responseJson.toString());
-                printWriter.flush();
-                printWriter.close();
+            //如果成功登陆则需要更新数据库中的deviceId和genkey数据
+            if (UserDao.checkPasswordIsRight(userInfo)){
+                UserDao.updaeUserInfoAfterLogin(userInfo);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("accesstoken", BaseUtil.createAccessToken());
+                responseJson.put("status", 0);
+                responseJson.put("msg", "账号密码正确");
+                responseJson.put("content", jsonObject);
             }else {
-                responseJson = new JSONObject();
-                responseJson.put("statuscode", 1);
-                responseJson.put("content", "登录失败");
-                PrintWriter printWriter = resp.getWriter();
-                printWriter.print(responseJson.toString());
-                printWriter.flush();
-                printWriter.close();
+                responseJson.put("status", 10011);
+                responseJson.put("msg", "密码错误");
             }
+
 
         }catch (Exception e){
             responseJson = new JSONObject();
             responseJson.put("statuscode", 1);
             responseJson.put("content", "登录失败 : " + e.toString());
+        }finally {
             PrintWriter printWriter = resp.getWriter();
             printWriter.print(responseJson.toString());
             printWriter.flush();
