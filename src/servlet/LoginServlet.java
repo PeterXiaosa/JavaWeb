@@ -1,5 +1,6 @@
 package servlet;
 
+import Dao.TokenDao;
 import Dao.UserDao;
 import bean.UserInfo;
 import com.google.gson.Gson;
@@ -43,9 +44,13 @@ public class LoginServlet extends HttpServlet{
 
             //如果成功登陆则需要更新数据库中的deviceId和genkey数据
             if (UserDao.checkPasswordIsRight(userInfo)){
+                String accessToken = BaseUtil.createAccessToken();
                 UserDao.updaeUserInfoAfterLogin(userInfo);
+                TokenDao.addTokenToDB(userInfo.getAccount(), accessToken);
+
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("accesstoken", BaseUtil.createAccessToken());
+                // 返回Token的同时应该向数据库中插入token信息
+                jsonObject.put("accesstoken", accessToken);
                 responseJson.put("status", 0);
                 responseJson.put("msg", "账号密码正确");
                 responseJson.put("content", jsonObject);

@@ -94,4 +94,21 @@ public class DBConnectionUtil {
             }
         }
     }
+
+    public  static int getUserCountInDB(String tableName) throws Exception {
+        Connection conn = DBConnectionUtil.getConnection();
+
+        // 获取用户数量
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM ?";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, tableName);
+        ResultSet resultSet = pst.executeQuery();
+        while (resultSet.next()){
+            count= resultSet.getInt(1);
+        }
+
+        DBConnectionUtil.close(resultSet, pst, conn);
+        return count;
+    }
 }
