@@ -1,6 +1,7 @@
 package Dao;
 
 import bean.UserInfo;
+import util.BaseUtil;
 import util.DBConnectionUtil;
 
 import java.sql.*;
@@ -12,7 +13,7 @@ public class UserDao {
 
         String sql = "INSERT INTO `mydbsystem`.`UserInfoTest` (`id`, `account`, `password`, `genkey`) VALUES (?, ?, ?, ?)";
         PreparedStatement psmt = conn.prepareStatement(sql);
-        psmt.setInt(1, getUserCountInDB() + 1);
+        psmt.setInt(1, BaseUtil.getTableCountInDB("UserInfoTest") + 1);
         psmt.setString(2, userInfo.getAccount());
         psmt.setString(3, userInfo.getPassword());
         psmt.setString(4, userInfo.getGenkey());
@@ -38,22 +39,6 @@ public class UserDao {
         }else {
             return false;
         }
-    }
-
-    public  static int getUserCountInDB() throws Exception {
-        Connection conn = DBConnectionUtil.getConnection();
-
-        // 获取用户数量
-        int count = 0;
-        String sql = "SELECT COUNT(*) FROM UserInfoTest";
-        PreparedStatement pstmt = conn.prepareStatement(sql);
-        ResultSet resultSet = pstmt.executeQuery();
-        while (resultSet.next()){
-            count= resultSet.getInt(1);
-        }
-
-        DBConnectionUtil.close(resultSet, pstmt, conn);
-        return count;
     }
 
     public static String getGenKeyFromDB(UserInfo userInfo) throws Exception{
@@ -104,11 +89,12 @@ public class UserDao {
 
     public static int updaeUserInfoAfterLogin(UserInfo userInfo) throws Exception{
         Connection conn = DBConnectionUtil.getConnection();
-        String sql = "UPDATE UserInfoTest SET deviceid = ?, genkey = ? WHERE account = ?";
+        String sql = "UPDATE UserInfoTest SET deviceid = ?, genkey = ? , password = ? WHERE account = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, userInfo.getDeviceId());
         pstmt.setString(2, userInfo.getGenkey());
-        pstmt.setString(3, userInfo.getAccount());
+        pstmt.setString(3, userInfo.getPassword());
+        pstmt.setString(4, userInfo.getAccount());
         int result = pstmt.executeUpdate();
         DBConnectionUtil.close(pstmt, conn);
         return result;

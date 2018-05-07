@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -75,4 +78,21 @@ public class BaseUtil {
 //    public static String generateSignature(String account, String password, String deviceId, String genKey){
 //
 //    }
+
+    public  static int getTableCountInDB(String tableName) throws Exception {
+        Connection conn = DBConnectionUtil.getConnection();
+
+        // 获取用户数量
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, tableName);
+        ResultSet resultSet = pstmt.executeQuery();
+        while (resultSet.next()){
+            count= resultSet.getInt(1);
+        }
+
+        DBConnectionUtil.close(resultSet, pstmt, conn);
+        return count;
+    }
 }

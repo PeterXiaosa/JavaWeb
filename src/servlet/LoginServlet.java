@@ -1,12 +1,12 @@
 package servlet;
 
+import Dao.TokenDao;
 import Dao.UserDao;
+import bean.Token;
 import bean.UserInfo;
 import com.google.gson.Gson;
 import net.sf.json.JSONObject;
 import util.BaseUtil;
-import util.DBConnectionUtil;
-import util.MD5Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,10 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 @WebServlet("/user/login")
 public class LoginServlet extends HttpServlet{
@@ -43,9 +43,19 @@ public class LoginServlet extends HttpServlet{
 
             //如果成功登陆则需要更新数据库中的deviceId和genkey数据
             if (UserDao.checkPasswordIsRight(userInfo)){
+                String accessToken = "";
+                // 登录成功在UserInfo表中更新用户信息。
                 UserDao.updaeUserInfoAfterLogin(userInfo);
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("accesstoken", BaseUtil.createAccessToken());
+                if (TokenDao.isAccountHasAccessToken(userInfo)){
+                    accessToken = TokenDao.getAccessTokenByAccount(userInfo);
+                }else {
+                    //创建AccessToken之后将其存入数据库中
+                    accessToken = BaseUtil.createAccessToken();
+                    TokenDao.InsertAccessTokenToDB(userInfo.getAccount(), accessToken);
+                }
+                jsonObject.put("accesstoken", accessToken);
+
                 responseJson.put("status", 0);
                 responseJson.put("msg", "账号密码正确");
                 responseJson.put("content", jsonObject);
