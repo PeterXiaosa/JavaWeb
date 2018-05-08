@@ -95,7 +95,7 @@ public class DBConnectionUtil {
         }
     }
 
-    public  static int getUserCountInDB(String tableName) throws Exception {
+    public  static int getTableCountInDB(String tableName) throws Exception {
         Connection conn = DBConnectionUtil.getConnection();
 
         // 获取用户数量

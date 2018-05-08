@@ -13,7 +13,7 @@ public class UserDao {
 
         String sql = "INSERT INTO `mydbsystem`.`UserInfoTest` (`id`, `account`, `password`, `genkey`) VALUES (?, ?, ?, ?)";
         PreparedStatement psmt = conn.prepareStatement(sql);
-        psmt.setInt(1, BaseUtil.getTableCountInDB("UserInfoTest") + 1);
+        psmt.setInt(1, DBConnectionUtil.getTableCountInDB("UserInfoTest") + 1);
         psmt.setString(2, userInfo.getAccount());
         psmt.setString(3, userInfo.getPassword());
         psmt.setString(4, userInfo.getGenkey());
@@ -41,13 +41,13 @@ public class UserDao {
         }
     }
 
-    public static String getGenKeyFromDB(UserInfo userInfo) throws Exception{
+    public static String getGenKeyFromDB(String account) throws Exception{
         String genkey = "";
         Connection conn = DBConnectionUtil.getConnection();
 
         String sql = "SELECT genkey FROM UserInfoTest WHERE account = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, userInfo.getAccount());
+        pstmt.setString(1, account);
         ResultSet resultSet = pstmt.executeQuery();
         if (resultSet.next()){
             genkey = resultSet.getString("genkey");
@@ -100,5 +100,18 @@ public class UserDao {
         return result;
     }
 
+//    public static String getGenKeyOfUser(String accouont) throws Exception{
+//        String genkey = "";
+//        Connection conn = DBConnectionUtil.getConnection();
+//        String sql = "SELECT genkey FROM UserInfoTest WHERE account = ?";
+//        PreparedStatement pstmt = conn.prepareStatement(sql);
+//        pstmt.setString(1, accouont);
+//        ResultSet resultSet = pstmt.executeQuery();
+//        if (resultSet.next()){
+//            genkey = resultSet.getString("genkey");
+//        }
+//        DBConnectionUtil.close(resultSet, pstmt, conn);
+//        return genkey;
+//    }
 
 }

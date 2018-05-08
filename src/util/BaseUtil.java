@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +20,9 @@ import java.util.regex.Pattern;
 public class BaseUtil {
     private static final String TOKEN_SUFFIX = "Peter";
     private static final String TOKEN_SOURCE = "0123456789abcdefghijklmnopqrstuvwxyz";
+    public static final int lengthOfNonce = 7;
+    private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5',
+            '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     public static JSONObject getDataFromRequest(HttpServletRequest request) {
         return getJsonObject(request);
@@ -75,24 +79,122 @@ public class BaseUtil {
 
         return builder.toString();
     }
-//    public static String generateSignature(String account, String password, String deviceId, String genKey){
-//
-//    }
 
-    public  static int getTableCountInDB(String tableName) throws Exception {
-        Connection conn = DBConnectionUtil.getConnection();
+    public static String generateSignature(String genkey, String timeStamp, String nonce){
+        String[] strs = {genkey, timeStamp, nonce};
+        String[] sortedStrs = sortByDictory(strs);
+        String tempString = "";
 
-        // 获取用户数量
-        int count = 0;
-        String sql = "SELECT COUNT(*) FROM ?";
-        PreparedStatement pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, tableName);
-        ResultSet resultSet = pstmt.executeQuery();
-        while (resultSet.next()){
-            count= resultSet.getInt(1);
+        if (sortedStrs[0].equals(genkey)){
+            tempString = genkey;
+        }
+        else if (sortedStrs[0].equals(nonce)){
+            tempString = nonce;
+        }
+        else if (sortedStrs[0].equals(timeStamp)){
+            tempString = timeStamp;
         }
 
-        DBConnectionUtil.close(resultSet, pstmt, conn);
-        return count;
+        if (sortedStrs[1].equals(genkey)){
+            tempString =  tempString +genkey;
+        }
+        else if (sortedStrs[1].equals(nonce)){
+            tempString = tempString +nonce;
+        }
+        else if (sortedStrs[1].equals(timeStamp)){
+            tempString = tempString + timeStamp;
+        }
+
+        if (sortedStrs[2].equals(genkey)){
+            tempString = tempString +genkey;
+        }
+        else if (sortedStrs[2].equals(nonce)){
+            tempString = tempString +nonce;
+        }
+        else if (sortedStrs[2].equals(timeStamp)){
+            tempString = tempString +timeStamp;
+        }
+        return encode(tempString);
+    }
+
+    private static String[] sortByDictory(String[] strs){
+        for (int i = 0; i < strs.length - 1; i++) {
+            boolean change = false; // 用作冒泡排序的标记，如果一趟排序存在交换，则change设为true，说明还需要下一趟排序
+            for (int j = 0; j < strs.length - i - 1; j++) {
+                if (bigger(strs[j], strs[j + 1])) {
+                    // swap(s[j], s[j + 1]);
+                    String tmp = strs[j];
+                    strs[j] = strs[j + 1];
+                    strs[j + 1] = tmp;
+                    change = true;
+                }
+            }
+            if (!change) {
+                break; // 当change为false的时候，说明不需要再冒泡了
+            }
+        }
+        return strs;
+    }
+
+    private static boolean bigger(String s1, String s2) {
+        int length1 = s1.length();
+        int length2 = s2.length();
+        int i = 0;
+        while (i < length1 && i < length2) {
+            if (s1.charAt(i) > s2.charAt(i)) {
+                return true;
+            } else if (s1.charAt(i) < s2.charAt(i)) {
+                return false;
+            } else {
+                i++;
+            }
+        }
+        if (i == length1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private static String encode(String str) {
+        if (str == null) {
+            return null;
+        }
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
+            messageDigest.update(str.getBytes());
+            return getFormattedText(messageDigest.digest());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Takes the raw bytes from the digest and formats them correct.
+     *
+     * @param bytes the raw bytes from the digest.
+     * @return the formatted bytes.
+     */
+    private static String getFormattedText(byte[] bytes) {
+        int len = bytes.length;
+        StringBuilder buf = new StringBuilder(len * 2);
+        // 把密文转换成十六进制的字符串形式
+        for (int j = 0; j < len; j++) {
+            buf.append(HEX_DIGITS[(bytes[j] >> 4) & 0x0f]);
+            buf.append(HEX_DIGITS[bytes[j] & 0x0f]);
+        }
+        return buf.toString();
+    }
+
+    public static boolean compareDate(Date start, Date end){
+        if (start.compareTo(end) > 0) {
+            System.out.println("Date1 is after Date2");
+            return true;
+        } else if (start.compareTo(end) < 0) {
+            return false;
+        } else if (start.compareTo(end) == 0) {
+            return true;
+        }
+        return true;
     }
 }
