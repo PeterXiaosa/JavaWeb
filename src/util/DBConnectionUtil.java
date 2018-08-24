@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class DBConnectionUtil {
     private static final String DBDRIVER = "com.mysql.jdbc.Driver";
-    private static final String DBURL = "jdbc:mysql://47.100.210.98:3306/mydbsystem";
+    private static final String DBURL = "jdbc:mysql://localhost:3306/playappserver";
     private static final String DBUSER = "root";
     private static final String DBPASSWORD = "root";
 
@@ -100,9 +100,10 @@ public class DBConnectionUtil {
 
         // 获取用户数量
         int count = 0;
-        String sql = "SELECT COUNT(*) FROM ?";
+//        String sql = "SELECT COUNT(*) FROM ?";
+        String sql = "SELECT count(*) AS RESULT FROM " + tableName;
         PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, tableName);
+//        pst.setString(1, tableName);
         ResultSet resultSet = pst.executeQuery();
         while (resultSet.next()){
             count= resultSet.getInt(1);

@@ -35,6 +35,7 @@ public class LoginServlet extends HttpServlet{
                 if (! UserDao.checkPasswordIsRight(userInfo)){
                     responseJson.put("status", 10011);
                     responseJson.put("msg", "密码错误");
+                    responseJson.put("content", new JSONObject());
                     break;
                 }
 
@@ -55,9 +56,9 @@ public class LoginServlet extends HttpServlet{
                 }
 
                 if (TokenDao.isAccessTokenTimeOut(userInfo.getAccount())){
-                    responseJson.put("status", 100011);
+                    responseJson.put("status", 10012);
                     responseJson.put("msg", "accesstoken过期");
-                    responseJson.put("content", "");
+                    responseJson.put("content", new JSONObject());
                     break;
                 }
 
@@ -65,6 +66,7 @@ public class LoginServlet extends HttpServlet{
                 responseJson.put("status", 0);
                 responseJson.put("msg", "账号密码正确");
                 jsonObject.put("accesstoken", accessToken);
+                jsonObject.put("account", userInfo.getAccount());
                 responseJson.put("content", jsonObject);
             }while (false);
 
