@@ -32,6 +32,8 @@ public class ProductServlet extends HttpServlet{
             int type = requestJson.getInt("type");
             JSONArray jsonArray = ProductDao.getProductByType(type);
             responseJson.put("content", jsonArray);
+            responseJson.put("status", 0);
+            responseJson.put("msg", "查询成功");
 
         } catch (SQLException e) {
             e.printStackTrace();
