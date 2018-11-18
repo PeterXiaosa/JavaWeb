@@ -29,7 +29,7 @@ public class UserDao {
         String account = userInfo.getAccount();
 
         Connection conn = DBConnectionUtil.getConnection();
-        String sql = "SELECT * FROM USERINFO WHERE account = ?";
+        String sql = "SELECT * FROM userinfo WHERE account = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, account);
         ResultSet result = pstmt.executeQuery();
@@ -46,7 +46,7 @@ public class UserDao {
         String genkey = "";
         Connection conn = DBConnectionUtil.getConnection();
 
-        String sql = "SELECT genkey FROM UserInfo WHERE account = ?";
+        String sql = "SELECT genkey FROM userinfo WHERE account = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, account);
         ResultSet resultSet = pstmt.executeQuery();
@@ -72,7 +72,7 @@ public class UserDao {
         String password = "";
         Connection conn = DBConnectionUtil.getConnection();
 
-        String sql = "SELECT password FROM UserInfo WHERE account = ?";
+        String sql = "SELECT password FROM userinfo WHERE account = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, userInfo.getAccount());
         ResultSet resultSet = pstmt.executeQuery();
@@ -90,7 +90,7 @@ public class UserDao {
 
     public static int updaeUserInfoAfterLogin(UserInfo userInfo) throws Exception{
         Connection conn = DBConnectionUtil.getConnection();
-        String sql = "UPDATE UserInfo SET deviceid = ?, genkey = ? , password = ? WHERE account = ?";
+        String sql = "UPDATE userinfo SET deviceid = ?, genkey = ? , password = ? WHERE account = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, userInfo.getDeviceId());
         pstmt.setString(2, userInfo.getGenkey());

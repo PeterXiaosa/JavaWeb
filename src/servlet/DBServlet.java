@@ -35,7 +35,7 @@ public class DBServlet extends HttpServlet{
         try{
             connection = DBConnectionUtil.getConnection();
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM UsersInfo;");
+            resultSet = statement.executeQuery("SELECT * FROM userinfo;");
 
             JSONArray jsonArray = new JSONArray();
 

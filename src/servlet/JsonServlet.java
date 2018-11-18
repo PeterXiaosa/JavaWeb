@@ -89,56 +89,7 @@ public class JsonServlet extends HttpServlet {
         Gson gson = new Gson();
         String json = gson.toJson(nt);
 
-        String url = "jdbc:mysql://localhost:3306/playappserver";
-        String user = "root";
-        String password = "root";
-        Connection connection = null;
-        Statement statement = null;
-        ResultSet resultSet = null;
-        try{
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, user, password);
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM user;");
-
-            while (resultSet.next()){
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("account");
-                String a = resultSet.getString("password");
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if (resultSet != null){
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                resultSet = null;
-            }
-            if (statement != null){
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                statement = null;
-            }
-            if (connection != null){
-                try {
-                    connection.close();
-                }catch (SQLException e){
-                    e.printStackTrace();
-                }
-                connection = null;
-            }
-        }
-
-        // 输出到界面
-        System.out.println(json);
-        resp.setContentType("application/json;charset=gb2312");
+//        resp.setContentType("application/json;charset=utf-8");
         PrintWriter out = new PrintWriter(resp.getOutputStream());
         out.print(json);
         out.flush();

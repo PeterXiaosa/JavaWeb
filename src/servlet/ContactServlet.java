@@ -38,7 +38,7 @@ public class ContactServlet extends HttpServlet{
             String userPhone = (String) requestJson.get("phone");
 
 
-            String dbOperate = "SELECT userId FROM UsersInfo WHERE phone = '" + userPhone + "'";
+            String dbOperate = "SELECT userId FROM userinfo WHERE phone = '" + userPhone + "'";
             ResultSet resultSet = statement.executeQuery(dbOperate);
             int userId = -1;
 //                int userId = resultSet.getInt("userId");

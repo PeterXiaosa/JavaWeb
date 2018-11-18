@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="mydbsystem@47.100.210.98" uuid="33fdb9e9-db4f-4a5a-9a6a-c373aff987bd">
+    <data-source source="LOCAL" name="playappserver@106.15.92.137" uuid="8e261222-2af5-4f34-b1d1-532b808ce3de">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://47.100.210.98:3306/mydbsystem</jdbc-url>
+      <jdbc-url>jdbc:mysql://106.15.92.137:3306/playappserver</jdbc-url>
       <driver-properties>
         <property name="autoReconnect" value="true" />
         <property name="zeroDateTimeBehavior" value="convertToNull" />
