@@ -35,4 +35,21 @@ public class ProductDao {
         DBConnectionUtil.close(resultSet, psmt, conn);
         return jsonArray;
     }
+
+    public static JSONArray getProductType() throws Exception {
+        JSONArray jsonArray = new JSONArray();
+        Connection conn = DBConnectionUtil.getConnection();
+        String sql = "SELECT * FROM ProductTypeTable";
+        PreparedStatement psmt = conn.prepareStatement(sql);
+        ResultSet resultSet = psmt.executeQuery();
+        while (resultSet.next()){
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type", resultSet.getInt("type"));
+            jsonObject.put("type_name", resultSet.getString("type_name"));
+            jsonObject.put("image_url", resultSet.getString("image_url"));
+            jsonArray.add(jsonObject);
+        }
+        DBConnectionUtil.close(resultSet, psmt, conn);
+        return jsonArray;
+    }
 }
