@@ -1,11 +1,14 @@
 package Dao;
 
+import bean.RenHeUserInfo;
 import util.DBConnectionUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AppDao {
 
@@ -79,4 +82,24 @@ public class AppDao {
         DBConnectionUtil.close(resultSet, pstmt, conn);
         return result;
     }
+
+    public static List<RenHeUserInfo> getUserInfoList() throws Exception {
+        List<RenHeUserInfo> result = new ArrayList<>();
+        String deviceId;
+        boolean isAllowed;
+        Connection conn = DBConnectionUtil.getConnection();
+        String sql = "SELECT * FROM AppCalculate";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+//        pstmt.setString(1, deviceid);
+        ResultSet resultSet = pstmt.executeQuery();
+        while (resultSet.next()){
+            deviceId = resultSet.getString("deviceid");
+            isAllowed = resultSet.getBoolean("isallowed");
+            result.add(new RenHeUserInfo(deviceId, isAllowed));
+        }
+        DBConnectionUtil.close(resultSet, pstmt, conn);
+
+        return result;
+    }
 }
+
