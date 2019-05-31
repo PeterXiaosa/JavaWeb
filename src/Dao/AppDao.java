@@ -101,5 +101,16 @@ public class AppDao {
 
         return result;
     }
+
+    public static int modifyUserPermission(String deviceId, boolean isAllowed) throws Exception {
+        Connection conn = DBConnectionUtil.getConnection();
+        String sql = "UPDATE AppCalculate SET isallowed = ? WHERE deviceid = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setBoolean(1, isAllowed);
+        pstmt.setString(2, deviceId);
+        int result = pstmt.executeUpdate();
+        DBConnectionUtil.close(pstmt, conn);
+        return result;
+    }
 }
 

@@ -1,6 +1,8 @@
-package servlet;
+package servlet.renheAPI;
 
 import Dao.AppDao;
+import bean.RenHeUserInfo;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import util.BaseUtil;
 
@@ -11,9 +13,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
-@WebServlet("/allowapp")
-public class AppPermissionServlet extends HttpServlet {
+@WebServlet("/setuserpermission")
+public class AppPermissionControlServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doGet(req, resp);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -22,24 +29,17 @@ public class AppPermissionServlet extends HttpServlet {
             // 获取Client端数据
             JSONObject requestJson = BaseUtil.getDataFromRequest(request);
             String deviceId = requestJson.getString("deviceid");
-            boolean isAllowed = true;
+            boolean isAllowed = requestJson.getBoolean("isallowed");
 
-            if (AppDao.isHasUseApp(deviceId)){
-//                AppDao.updaeUseAppCount(deviceId);
-                isAllowed = AppDao.isAllowedUseApp(deviceId);
-            }else {
-                AppDao.addNewUser(deviceId);
-            }
+            AppDao.modifyUserPermission(deviceId, isAllowed);
 
             responseJson.put("status", 0);
-            responseJson.put("msg", "获取权限成功");
-            responseJson.put("isallowed", isAllowed);
+            responseJson.put("msg", "修改权限成功");
 
         } catch (Exception e){
             e.printStackTrace();
             responseJson.put("status", 1);
-            responseJson.put("msg", "获取权限失败");
-            responseJson.put("isallowed", false);
+            responseJson.put("msg", "修改权限失败");
         }
         finally {
             PrintWriter printWriter = response.getWriter();

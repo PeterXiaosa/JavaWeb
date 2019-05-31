@@ -1,8 +1,6 @@
-package servlet;
+package servlet.renheAPI;
 
 import Dao.AppDao;
-import bean.RenHeUserInfo;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import util.BaseUtil;
 
@@ -13,41 +11,35 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 
-@WebServlet("/getuserpermission")
-public class StatisticServlet extends HttpServlet {
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-    }
+@WebServlet("/allowapp")
+public class AppPermissionServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         JSONObject responseJson = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
         try {
             // 获取Client端数据
             JSONObject requestJson = BaseUtil.getDataFromRequest(request);
+            String deviceId = requestJson.getString("deviceid");
+            boolean isAllowed = true;
 
-            List<RenHeUserInfo> result = AppDao.getUserInfoList();
-
-            for (RenHeUserInfo userInfo : result){
-                JSONObject object = new JSONObject();
-                object.put("deviceId", userInfo.getDeviceId());
-                object.put("isAllowed", userInfo.isAllowed());
-                jsonArray.add(object);
+            if (AppDao.isHasUseApp(deviceId)){
+//                AppDao.updaeUseAppCount(deviceId);
+                isAllowed = AppDao.isAllowedUseApp(deviceId);
+            }else {
+                AppDao.addNewUser(deviceId);
             }
 
             responseJson.put("status", 0);
-            responseJson.put("msg", "获取数据成功");
-            responseJson.put("data", jsonArray);
+            responseJson.put("msg", "获取权限成功");
+            responseJson.put("isallowed", isAllowed);
 
         } catch (Exception e){
             e.printStackTrace();
             responseJson.put("status", 1);
-            responseJson.put("msg", "获取数据失败");
-            responseJson.put("data", jsonArray);
+            responseJson.put("msg", "获取权限失败");
+            responseJson.put("isallowed", false);
         }
         finally {
             PrintWriter printWriter = response.getWriter();
