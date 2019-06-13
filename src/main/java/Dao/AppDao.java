@@ -85,6 +85,7 @@ public class AppDao {
 
     public static List<RenHeUserInfo> getUserInfoList() throws Exception {
         List<RenHeUserInfo> result = new ArrayList<>();
+//        List<RenHeUserInfo> result = new ArrayList<RenHeUserInfo>();
         String deviceId;
         boolean isAllowed;
         Connection conn = DBConnectionUtil.getConnection();
