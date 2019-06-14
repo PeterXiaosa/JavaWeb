@@ -42,6 +42,21 @@ public class UserDao {
         }
     }
 
+    public static boolean checkUser(String account) throws Exception{
+        Connection conn = DBConnectionUtil.getConnection();
+        String sql = "SELECT * FROM userinfo WHERE account = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, account);
+        ResultSet result = pstmt.executeQuery();
+        if (result.next()){
+            DBConnectionUtil.close(result, pstmt, conn);
+            return true;
+        }else {
+            DBConnectionUtil.close(result, pstmt, conn);
+            return false;
+        }
+    }
+
     public static String getGenKeyFromDB(String account) throws Exception{
         String genkey = "";
         Connection conn = DBConnectionUtil.getConnection();
