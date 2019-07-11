@@ -1,12 +1,12 @@
-package main.java.websocket;
+package websocket;
 
+import Dao.UserDao;
 import bean.Partner;
 import bean.User;
+import bean.UserInfo;
 import data.ProtectSocketData;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -48,21 +48,39 @@ public class WebSocketTest {
             // 匹配码合法
             ProtectSocketData.getsInstance().saveSocketCode(matchcode);
             Partner partner = webSocketPartnerMap.get(matchcode);
-            if (partner != null){
-                User user2 = partner.getPartner2();
-                if (user2 == null){
-                    user2 = new User();
-                    partner.setPartner2(user2);
-                }
-            }else {
+            if (partner == null) {
                 // 双人中第一个人首先连接
                 partner = new Partner();
-                User user1 = new User();
                 partner.setMatchCode(matchcode);
-                partner.setPartner1(user1);
+                User user1 = new User();
+                user1.setSession(session);
+                user1.setDeviceId(deviceid);
+                partner.setUser1(user1);
+            }else {
+                // 双人中第二个人连接
+                User user2 = partner.getUser2();
+                if (user2 == null){
+                    user2 = new User();
+                    user2.setSession(session);
+                    user2.setDeviceId(deviceid);
+                    partner.setUser2(user2);
+
+                    // 至此配对结束，需要将数据存库
+                    UserInfo userInfo2 = new UserInfo();
+                    userInfo2.setDeviceId(deviceid);
+                    User user1 = partner.getUser1();
+                    UserInfo userInfo1 = new UserInfo();
+                    userInfo1.setDeviceId(user1.getDeviceId());
+                    try {
+                        UserDao.updateUserMatchcodeByDeviceId(matchcode, user1.getDeviceId());
+                        UserDao.updateUserMatchcodeByDeviceId(matchcode, user2.getDeviceId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }else{
-            // 匹配码不合法
+            // 匹配码不合法, 可客户端先检测匹配码是否合法，合法再进行连接。否则容易耗费资源
 
 //            try {
 //                session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "匹配码不存在"));
@@ -88,7 +106,7 @@ public class WebSocketTest {
      * @param session 可选的参数
      */
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(@PathParam(value = "matchcode")String matchCode, String message, Session session) {
         System.out.println("来自客户端的消息:" + message);
         //群发消息
         for(WebSocketTest item: webSocketSet){
@@ -98,6 +116,22 @@ public class WebSocketTest {
                 e.printStackTrace();
                 continue;
             }
+        }
+
+        try {
+            // 收到一端的信息，需要转发到另外的匹配端
+            Partner partner = webSocketPartnerMap.get(matchCode);
+            User user1 = partner.getUser1();
+            if (session.getId().equals(user1.getSession().getId())) {
+                User user2 = partner.getUser2();
+                Session desSession =user2.getSession();
+                desSession.getBasicRemote().sendText(message);
+            } else {
+                Session desSession =user1.getSession();
+                desSession.getBasicRemote().sendText(message);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
         }
     }
 

@@ -4,8 +4,8 @@ import java.sql.*;
 
 public class DBConnectionUtil {
     private static final String DBDRIVER = "com.mysql.jdbc.Driver";
-//    private static final String DBURL = "jdbc:mysql://localhost:3306/playappserver";
-    private static final String DBURL = "jdbc:mysql://106.15.92.137:3306/playappserver";
+    private static final String DBURL = "jdbc:mysql://localhost:3306/playappserver";
+//    private static final String DBURL = "jdbc:mysql://106.15.92.137:3306/playappserver";
     private static final String DBUSER = "root";
     private static final String DBPASSWORD = "root";
 

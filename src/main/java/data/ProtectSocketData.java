@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+/**
+ *  matchcode 应该仅仅用作用户配对，当配对结束matchcode应该回收，之后访问用户可使用用户名和设备号来访问。
+ */
 public class ProtectSocketData {
     // 用来存储生成的随机配对码
     private List<String> matchCodeList = new ArrayList<>();

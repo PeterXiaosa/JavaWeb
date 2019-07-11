@@ -11,17 +11,17 @@ public class UserDao {
     public static int addUser(UserInfo userInfo) throws Exception{
         Connection conn = DBConnectionUtil.getConnection();
 
-        String sql = "INSERT INTO `playappserver`.`userinfo` (`id`, `account`, `password`, `genkey`, `deviceid`) VALUES (?, ?, ?, ?,?)";
+        String sql = "INSERT INTO `playappserver`.`userinfo` (`id`, `account`, `password`, `genkey`, `deviceid`, `matchcode`) VALUES (?, ?, ?, ?,?,?)";
         PreparedStatement psmt = conn.prepareStatement(sql);
         psmt.setInt(1, DBConnectionUtil.getTableCountInDB("userinfo") + 1);
         psmt.setString(2, userInfo.getAccount());
         psmt.setString(3, userInfo.getPassword());
         psmt.setString(4, userInfo.getGenkey());
         psmt.setString(5, userInfo.getDeviceId());
+        psmt.setString(6, userInfo.getMatchcode());
         int result = psmt.executeUpdate();
 
         DBConnectionUtil.close(psmt, conn);
-
         return result;
     }
 
@@ -131,47 +131,43 @@ public class UserDao {
         return count;
     }
 
-    public static boolean isHasUseApp(String deviceid) throws Exception{
+    public static UserInfo getUserInfoByDeviceId(String deviceId) throws Exception {
         Connection conn = DBConnectionUtil.getConnection();
-        String sql = "SELECT * FROM AppCalculate WHERE deviceid = ?";
-        PreparedStatement pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, deviceid);
-        ResultSet result = pstmt.executeQuery();
+        UserInfo userInfo = new UserInfo();
 
-        if (result.next()){
-            DBConnectionUtil.close(result, pstmt, conn);
-            return true;
-        }else {
-            DBConnectionUtil.close(result, pstmt, conn);
-            return false;
+        String sql = "SELECT genkey FROM userinfo WHERE deviceid = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, deviceId);
+        ResultSet resultSet = pstmt.executeQuery();
+        if (resultSet.next()){
+            String account = resultSet.getString("account");
+            String password = resultSet.getString("password");
+            String genkey = resultSet.getString("genkey");
+            String matchcode = resultSet.getString("matchcode");
+            String name = resultSet.getString("name");
+            int age = resultSet.getInt("age");
+            boolean sex = resultSet.getBoolean("sex");
+            userInfo.setAccount(account);
+            userInfo.setPassword(password);
+            userInfo.setGenkey(genkey);
+            userInfo.setDeviceId(deviceId);
+            userInfo.setMatchcode(matchcode);
+            userInfo.setName(name);
+            userInfo.setAge(age);
+            userInfo.setSex(sex);
         }
+        DBConnectionUtil.close(resultSet, pstmt, conn);
+        return userInfo;
     }
 
-    public static int updaeUseAppCount(String deviceid) throws Exception{
+    public static int updateUserMatchcodeByDeviceId(String matchcode,String deviceId) throws Exception {
         Connection conn = DBConnectionUtil.getConnection();
-        String sql = "UPDATE AppCalculate SET usecount = ? WHERE deviceid = ?";
+        String sql = "UPDATE userinfo SET matchcode = ? WHERE deviceid = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
-        pstmt.setInt(1, getUseCountFromDB(deviceid) + 1);
-        pstmt.setString(2, deviceid);
+        pstmt.setString(1, matchcode);
+        pstmt.setString(2, deviceId);
         int result = pstmt.executeUpdate();
         DBConnectionUtil.close(pstmt, conn);
         return result;
-    }
-
-    public  static int getTableCountInApp(String tableName) throws Exception {
-        Connection conn = DBConnectionUtil.getConnection();
-        // 获取用户数量
-        int count = 0;
-//        String sql = "SELECT COUNT(*) FROM ?";
-        String sql = "SELECT count(1) FROM AppCalculate";
-        PreparedStatement pst = conn.prepareStatement(sql);
-//        pst.setString(1, tableName);
-        ResultSet resultSet = pst.executeQuery();
-        while (resultSet.next()){
-            count= resultSet.getInt(1);
-        }
-
-        DBConnectionUtil.close(resultSet, pst, conn);
-        return count;
     }
 }

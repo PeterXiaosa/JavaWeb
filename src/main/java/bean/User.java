@@ -11,7 +11,7 @@ public class User {
 
     private int age;
 
-    // 0 is male, 1 is female;
+    // 1 is male, 0 is female;
     private int sex;
 
     public Session getSession() {

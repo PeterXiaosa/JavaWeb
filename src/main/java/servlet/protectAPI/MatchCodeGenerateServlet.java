@@ -17,8 +17,8 @@ import java.io.PrintWriter;
 import java.sql.*;
 import java.util.Random;
 
-@WebServlet("/protect/matchcode")
-public class MatchCodeServlet extends HttpServlet {
+@WebServlet("/protect/matchcode/generate")
+public class MatchCodeGenerateServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         super.doGet(req, resp);
@@ -26,12 +26,9 @@ public class MatchCodeServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Statement statement = null;
         JSONObject responseJson = new JSONObject();
         responseJson = new JSONObject();
         try {
-            Connection connection = DBConnectionUtil.getConnection();
-            statement = connection.createStatement();
             JSONObject requestJson = BaseUtil.getDataFromRequest(req);
             String userAccount = requestJson.getString("account");
             if (UserDao.checkUser(userAccount)) {
@@ -61,7 +58,6 @@ public class MatchCodeServlet extends HttpServlet {
             printWriter.flush();
             printWriter.close();
         }catch (Exception e){
-            e.printStackTrace();
             e.printStackTrace();
             responseJson = new JSONObject();
             responseJson.put("status", 1);

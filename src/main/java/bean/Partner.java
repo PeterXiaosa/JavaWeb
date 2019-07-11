@@ -3,9 +3,9 @@ package bean;
 public class Partner {
     String matchCode;
 
-    User partner1;
+    User user1;
 
-    User partner2;
+    User user2;
 
     public String getMatchCode() {
         return matchCode;
@@ -15,19 +15,19 @@ public class Partner {
         this.matchCode = matchCode;
     }
 
-    public User getPartner1() {
-        return partner1;
+    public User getUser1() {
+        return user1;
     }
 
-    public void setPartner1(User partner1) {
-        this.partner1 = partner1;
+    public void setUser1(User user1) {
+        this.user1 = user1;
     }
 
-    public User getPartner2() {
-        return partner2;
+    public User getUser2() {
+        return user2;
     }
 
-    public void setPartner2(User partner2) {
-        this.partner2 = partner2;
+    public void setUser2(User user2) {
+        this.user2 = user2;
     }
 }
