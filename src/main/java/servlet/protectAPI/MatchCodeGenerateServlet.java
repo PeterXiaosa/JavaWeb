@@ -37,11 +37,12 @@ public class MatchCodeGenerateServlet extends HttpServlet {
                     matchCode = generateMatchCode(6);
                 }while (! ProtectSocketData.getsInstance().saveMatchCode(matchCode));
                 responseJson.put("status", 0);
-                responseJson.put("content","匹配码已生成");
-                responseJson.put("matchcode", matchCode);
+                responseJson.put("msg","匹配码已生成");
+                responseJson.put("data",matchCode);
             }else {
                 responseJson.put("status", 1);
-                responseJson.put("content", "该用户不存在");
+                responseJson.put("data","");
+                responseJson.put("msg", "该用户不存在");
             }
 
             PrintWriter printWriter = resp.getWriter();
@@ -52,6 +53,7 @@ public class MatchCodeGenerateServlet extends HttpServlet {
             e.printStackTrace();
             responseJson = new JSONObject();
             responseJson.put("status", 1);
+            responseJson.put("data","");
             responseJson.put("msg", "数据库操作失败" + e.toString());
             PrintWriter printWriter = resp.getWriter();
             printWriter.print(responseJson.toString());
@@ -62,6 +64,7 @@ public class MatchCodeGenerateServlet extends HttpServlet {
             responseJson = new JSONObject();
             responseJson.put("status", 1);
             responseJson.put("msg", "未知错误" + e.toString());
+            responseJson.put("data","");
             PrintWriter printWriter = resp.getWriter();
             printWriter.print(responseJson.toString());
             printWriter.flush();

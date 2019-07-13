@@ -56,6 +56,7 @@ public class WebSocketTest {
                 user1.setSession(session);
                 user1.setDeviceId(deviceid);
                 partner.setUser1(user1);
+                webSocketPartnerMap.put(matchcode, partner);
             }else {
                 // 双人中第二个人连接
                 User user2 = partner.getUser2();
@@ -64,6 +65,7 @@ public class WebSocketTest {
                     user2.setSession(session);
                     user2.setDeviceId(deviceid);
                     partner.setUser2(user2);
+                    webSocketPartnerMap.put(matchcode, partner);
 
                     // 至此配对结束，需要将数据存库
                     UserInfo userInfo2 = new UserInfo();
@@ -109,18 +111,21 @@ public class WebSocketTest {
     public void onMessage(@PathParam(value = "matchcode")String matchCode, String message, Session session) {
         System.out.println("来自客户端的消息:" + message);
         //群发消息
-        for(WebSocketTest item: webSocketSet){
-            try {
-                item.sendMessage(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-                continue;
-            }
-        }
+//        for(WebSocketTest item: webSocketSet){
+//            try {
+//                item.sendMessage(message);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                continue;
+//            }
+//        }
 
         try {
             // 收到一端的信息，需要转发到另外的匹配端
             Partner partner = webSocketPartnerMap.get(matchCode);
+            if (partner == null){
+                return;
+            }
             User user1 = partner.getUser1();
             if (session.getId().equals(user1.getSession().getId())) {
                 User user2 = partner.getUser2();

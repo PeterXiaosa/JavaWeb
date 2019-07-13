@@ -12,28 +12,6 @@
     String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 %>
 
-<%--<html>--%>
-<%--<head>--%>
-    <%--<base href="<%=basePath%>">--%>
-
-    <%--<title>Test Json</title>--%>
-    <%--<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">--%>
-    <%--<meta http-equiv="pragma" content="no-cache">--%>
-    <%--<meta http-equiv="cache-control" content="no-cache">--%>
-    <%--<meta http-equi content="0">--%>
-    <%--<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">--%>
-    <%--<meta http-equiv="description" content="This is my page">--%>
-    <%--<!----%>
-    <%--<link rel="stylesheet" type="text/css" href="styles.css">--%>
-    <%---->--%>
-<%--</head>--%>
-
-<%--<body>--%>
-<%--<form action="getJson" method="get">--%>
-    <%--<input type="submit" value="点击获取新闻JSON数据"/>--%>
-<%--</form>--%>
-<%--</body>--%>
-<%--</html>--%>
 
 
 <!DOCTYPE html>
@@ -49,14 +27,8 @@
      <meta http-equi content="0">
      <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
      <meta http-equiv="description" content="This is my page">
-     <!--
-     <link rel="stylesheet" type="text/css" href="styles.css">
-     -->
  </head>
 
- <%--<head>--%>
-         <%--<title>Java后端WebSocket的Tomcat实现</title>--%>
-     <%--</head>--%>
  <body>
      Welcome<br/><input id="text" type="text"/>
      <button onclick="send()">发送消息</button>
