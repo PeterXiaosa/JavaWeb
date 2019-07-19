@@ -160,6 +160,35 @@ public class UserDao {
         return userInfo;
     }
 
+    public static UserInfo getUserInfoByAccount(String account) throws Exception {
+        Connection conn = DBConnectionUtil.getConnection();
+        UserInfo userInfo = new UserInfo();
+
+        String sql = "SELECT * FROM userinfo WHERE account = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, account);
+        ResultSet resultSet = pstmt.executeQuery();
+        if (resultSet.next()){
+            String deviceId = resultSet.getString("deviceid");
+            String password = resultSet.getString("password");
+            String genkey = resultSet.getString("genkey");
+            String matchcode = resultSet.getString("matchcode");
+            String name = resultSet.getString("name");
+            int age = resultSet.getInt("age");
+            boolean sex = resultSet.getBoolean("sex");
+            userInfo.setAccount(account);
+            userInfo.setPassword(password);
+            userInfo.setGenkey(genkey);
+            userInfo.setDeviceId(deviceId);
+            userInfo.setMatchcode(matchcode);
+            userInfo.setName(name);
+            userInfo.setAge(age);
+            userInfo.setSex(sex);
+        }
+        DBConnectionUtil.close(resultSet, pstmt, conn);
+        return userInfo;
+    }
+
     public static int updateUserMatchcodeByDeviceId(String matchcode,String deviceId) throws Exception {
         Connection conn = DBConnectionUtil.getConnection();
         String sql = "UPDATE userinfo SET matchcode = ? WHERE deviceid = ?";

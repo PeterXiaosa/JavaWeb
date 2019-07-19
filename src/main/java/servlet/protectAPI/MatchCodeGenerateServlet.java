@@ -28,6 +28,7 @@ public class MatchCodeGenerateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JSONObject responseJson = new JSONObject();
         responseJson = new JSONObject();
+        JSONObject jsonObject = new JSONObject();
         try {
             JSONObject requestJson = BaseUtil.getDataFromRequest(req);
             String userAccount = requestJson.getString("account");
@@ -38,10 +39,11 @@ public class MatchCodeGenerateServlet extends HttpServlet {
                 }while (! ProtectSocketData.getsInstance().saveMatchCode(matchCode));
                 responseJson.put("status", 0);
                 responseJson.put("msg","匹配码已生成");
-                responseJson.put("data",matchCode);
+                jsonObject.put("matchcode", matchCode);
+                responseJson.put("data",jsonObject);
             }else {
                 responseJson.put("status", 1);
-                responseJson.put("data","");
+                responseJson.put("data", jsonObject);
                 responseJson.put("msg", "该用户不存在");
             }
 

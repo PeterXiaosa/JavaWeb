@@ -35,7 +35,7 @@ public class LoginServlet extends HttpServlet{
                 if (! UserDao.checkPasswordIsRight(userInfo)){
                     responseJson.put("status", 10011);
                     responseJson.put("msg", "密码错误");
-                    responseJson.put("content", new JSONObject());
+                    responseJson.put("data", new JSONObject());
                     break;
                 }
 
@@ -47,33 +47,37 @@ public class LoginServlet extends HttpServlet{
                     //创建AccessToken之后将其存入数据库中
                     accessToken = BaseUtil.createAccessToken();
                     TokenDao.InsertAccessTokenToDB(userInfo.getAccount(), accessToken);
-                    jsonObject.put("accesstoken", accessToken);
 
                     responseJson.put("status", 0);
                     responseJson.put("msg", "账号密码正确");
-                    responseJson.put("content", jsonObject);
+                    responseJson.put("data", jsonObject);
                     break;
                 }
 
                 if (TokenDao.isAccessTokenTimeOut(userInfo.getAccount())){
                     responseJson.put("status", 10012);
                     responseJson.put("msg", "accesstoken过期");
-                    responseJson.put("content", new JSONObject());
+                    responseJson.put("data", new JSONObject());
                     break;
                 }
 
                 accessToken = TokenDao.getAccessTokenByAccount(userInfo);
+                UserInfo user = UserDao.getUserInfoByAccount(userInfo.getAccount());
                 responseJson.put("status", 0);
                 responseJson.put("msg", "账号密码正确");
                 jsonObject.put("accesstoken", accessToken);
-                jsonObject.put("account", userInfo.getAccount());
-                responseJson.put("content", jsonObject);
+                jsonObject.put("account", user.getAccount());
+                jsonObject.put("deviceId", user.getDeviceId());
+                jsonObject.put("name", user.getName());
+                jsonObject.put("age", user.getAge());
+                jsonObject.put("sex", user.isSex());
+                responseJson.put("data", jsonObject);
             }while (false);
 
         }catch (Exception e){
             responseJson = new JSONObject();
             responseJson.put("statuscode", 1);
-            responseJson.put("content", "登录失败 : " + e.toString());
+            responseJson.put("data", "登录失败 : " + e.toString());
         }finally {
             PrintWriter printWriter = resp.getWriter();
             printWriter.print(responseJson.toString());
