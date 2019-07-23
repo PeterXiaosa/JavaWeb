@@ -79,6 +79,14 @@ public class WebSocketTest {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    User usermale = partner.getUser1();
+                    User userfemale = partner.getUser2();
+                    try {
+                        usermale.getSession().getBasicRemote().sendText("startconnectyourpartner");
+                        userfemale.getSession().getBasicRemote().sendText("startconnectyourpartner");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }else{

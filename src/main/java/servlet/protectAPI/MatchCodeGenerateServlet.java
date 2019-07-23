@@ -17,6 +17,9 @@ import java.io.PrintWriter;
 import java.sql.*;
 import java.util.Random;
 
+/**
+ *  产生匹配码
+ */
 @WebServlet("/protect/matchcode/generate")
 public class MatchCodeGenerateServlet extends HttpServlet {
     @Override

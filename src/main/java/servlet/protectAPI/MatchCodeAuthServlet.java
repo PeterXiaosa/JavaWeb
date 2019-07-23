@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Statement;
 
+/**
+ * 检测匹配码是否合法，在进行长连接之前需要先检测。
+ */
 @WebServlet("/protect/matchcode/auth")
 public class MatchCodeAuthServlet extends HttpServlet {
 
@@ -40,6 +43,7 @@ public class MatchCodeAuthServlet extends HttpServlet {
             responseJson.put("status", 1);
             responseJson.put("content", "匹配码非法");
         }
+        responseJson.put("data", new JSONObject());
         PrintWriter printWriter = resp.getWriter();
         printWriter.print(responseJson.toString());
         printWriter.flush();
