@@ -7,6 +7,7 @@ import bean.UserInfo;
 import data.ProtectSocketData;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -115,9 +116,11 @@ public class WebSocketTest {
      * @param message 客户端发送过来的消息
      * @param session 可选的参数
      */
+
+
     @OnMessage
     public void onMessage(@PathParam(value = "matchcode")String matchCode, String message, Session session) {
-        System.out.println("来自客户端的消息:" + message);
+        System.out.println("来自客户端的消息:" + message);;
         //群发消息
 //        for(WebSocketTest item: webSocketSet){
 //            try {
@@ -137,8 +140,10 @@ public class WebSocketTest {
             User user1 = partner.getUser1();
             if (session.getId().equals(user1.getSession().getId())) {
                 User user2 = partner.getUser2();
-                Session desSession =user2.getSession();
-                desSession.getBasicRemote().sendText(message);
+                if (user2 != null) {
+                    Session desSession = user2.getSession();
+                    desSession.getBasicRemote().sendText(message);
+                }
             } else {
                 Session desSession =user1.getSession();
                 desSession.getBasicRemote().sendText(message);
@@ -146,7 +151,34 @@ public class WebSocketTest {
         }catch (IOException e){
             e.printStackTrace();
         }
+
     }
+
+
+
+    /**
+     * 收到客户端消息后调用的方法
+     * @param messages 客户端发送过来的消息
+     * @param session 可选的参数
+     */
+    @OnMessage
+    public void onMessage(byte[] messages, Session session) {
+        try {
+            System.out.println("接收到消息:"+new String(messages,"utf-8"));
+            //返回信息
+            String resultStr="{name:\"张三\",age:18,addr:\"上海浦东\"}";
+            //发送字符串信息的 byte数组
+            ByteBuffer bf= ByteBuffer.wrap(resultStr.getBytes("utf-8"));
+            session.getBasicRemote().sendBinary(bf);
+            //发送字符串
+            //session.getBasicRemote().sendText("测试");
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
 
     /**
      * 发生错误时调用
