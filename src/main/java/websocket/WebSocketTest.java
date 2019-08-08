@@ -1,10 +1,12 @@
 package websocket;
 
 import Dao.UserDao;
+import bean.MyLocation;
 import bean.Partner;
 import bean.User;
 import bean.UserInfo;
 import data.ProtectSocketData;
+import util.SerializeUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -33,6 +35,8 @@ public class WebSocketTest {
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
 
+    private String matchcode, deviceid;
+
     /**
      * 连接建立成功调用的方法
      * @param session  可选的参数。session为与某个客户端的连接会话，需要通过它来给客户端发送数据
@@ -42,6 +46,8 @@ public class WebSocketTest {
         this.session = session;
         webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
+        this.matchcode = matchcode;
+        this.deviceid = deviceid;
         System.out.println("携带的参数的是 " + matchcode);
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
 
@@ -162,21 +168,26 @@ public class WebSocketTest {
      * @param session 可选的参数
      */
     @OnMessage
-    public void onMessage(byte[] messages, Session session) {
-        try {
-            System.out.println("接收到消息:"+new String(messages,"utf-8"));
-            //返回信息
-            String resultStr="{name:\"张三\",age:18,addr:\"上海浦东\"}";
-            //发送字符串信息的 byte数组
-            ByteBuffer bf= ByteBuffer.wrap(resultStr.getBytes("utf-8"));
-            session.getBasicRemote().sendBinary(bf);
-            //发送字符串
-            //session.getBasicRemote().sendText("测试");
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public void onMessage(byte[] messages, Session session) throws IOException {
+        MyLocation myLocation = (MyLocation) SerializeUtil.unserialize(messages);
+        System.out.println("latitude : " + myLocation.getLatitude() + ", longitude : " + myLocation.getLongitude());
 
+        for (WebSocketTest webSocketTest : webSocketSet){
+            if (webSocketTest.session == session){
+                String matchcode = webSocketTest.matchcode;
+                Partner partner = webSocketPartnerMap.get(matchcode);
+                User user1 = partner.getUser1();
+                User user2 = partner.getUser2();
+                if (user1.getSession() == session){
+                    // 说明user1将位置发送过来了
+                    user1.setLocation(myLocation);
+                    user2.getSession().getBasicRemote().sendText("收到经纬度 : " + myLocation.getLongitude() + ",维度: " + myLocation.getLatitude());
+                }else if (user2.getSession() == session) {
+                    user2.setLocation(myLocation);
+                    user1.getSession().getBasicRemote().sendText("收到经纬度 : " + myLocation.getLongitude() + ",维度: " + myLocation.getLatitude());
+                }
+            }
+        }
     }
 
 

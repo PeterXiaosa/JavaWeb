@@ -1,8 +1,9 @@
 package bean;
 
 import javax.websocket.Session;
+import java.io.Serializable;
 
-public class User {
+public class User implements Serializable {
     private Session session;
 
     private String deviceId;
@@ -13,6 +14,8 @@ public class User {
 
     // 1 is male, 0 is female;
     private int sex;
+
+    private MyLocation location;
 
     public Session getSession() {
         return session;
@@ -52,5 +55,13 @@ public class User {
 
     public void setSex(int sex) {
         this.sex = sex;
+    }
+
+    public MyLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(MyLocation location) {
+        this.location = location;
     }
 }
