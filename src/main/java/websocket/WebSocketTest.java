@@ -45,7 +45,7 @@ public class WebSocketTest {
     public void onOpen(@PathParam(value="matchcode")String matchcode, @PathParam(value = "deviceid")String deviceid, Session session){
         this.session = session;
         webSocketSet.add(this);     //加入set中
-        addOnlineCount();           //在线数加1
+        addOnlineCount();           //在线数加1100
         this.matchcode = matchcode;
         this.deviceid = deviceid;
         System.out.println("携带的参数的是 " + matchcode);
@@ -99,11 +99,11 @@ public class WebSocketTest {
         }else{
             // 匹配码不合法, 可客户端先检测匹配码是否合法，合法再进行连接。否则容易耗费资源
 
-//            try {
-//                session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "匹配码不存在"));
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "匹配码不存在"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -161,7 +161,6 @@ public class WebSocketTest {
     }
 
 
-
     /**
      * 收到客户端消息后调用的方法
      * @param messages 客户端发送过来的消息
@@ -178,13 +177,21 @@ public class WebSocketTest {
                 Partner partner = webSocketPartnerMap.get(matchcode);
                 User user1 = partner.getUser1();
                 User user2 = partner.getUser2();
-                if (user1.getSession() == session){
+                if (user1.getSession() == session) {
                     // 说明user1将位置发送过来了
                     user1.setLocation(myLocation);
-                    user2.getSession().getBasicRemote().sendText("收到经纬度 : " + myLocation.getLongitude() + ",维度: " + myLocation.getLatitude());
-                }else if (user2.getSession() == session) {
+//                    user2.getSession().getBasicRemote().sendText("收到经纬度 : " + myLocation.getLongitude() + ",维度: " + myLocation.getLatitude());
+                    byte[] bytes = SerializeUtil.serialize(myLocation);
+                    if (bytes != null) {
+                        user2.getSession().getBasicRemote().sendBinary(ByteBuffer.wrap(bytes));
+                    }
+                } else if (user2.getSession() == session) {
                     user2.setLocation(myLocation);
-                    user1.getSession().getBasicRemote().sendText("收到经纬度 : " + myLocation.getLongitude() + ",维度: " + myLocation.getLatitude());
+//                    user1.getSession().getBasicRemote().sendText("收到经纬度 : " + myLocation.getLongitude() + ",维度: " + myLocation.getLatitude());
+                    byte[] bytes = SerializeUtil.serialize(myLocation);
+                    if (bytes != null) {
+                        user1.getSession().getBasicRemote().sendBinary(ByteBuffer.wrap(bytes));
+                    }
                 }
             }
         }

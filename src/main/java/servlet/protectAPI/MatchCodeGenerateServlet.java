@@ -82,7 +82,7 @@ public class MatchCodeGenerateServlet extends HttpServlet {
         Random rand = new Random();
         StringBuffer flag = new StringBuffer();
         for (int j = 0; j < bitCount; j++) {
-            flag.append(sources.charAt(rand.nextInt(9)) + "");
+            flag.append(sources.charAt(rand.nextInt(9)));
         }
         return flag.toString();
     }

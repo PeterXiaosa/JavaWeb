@@ -42,7 +42,7 @@
         var websocket = null;
          //判断当前浏览器是否支持WebSocket
          if ('WebSocket' in window) {
-                 websocket = new WebSocket("ws://localhost:8080/mywebsocket/abcd123/newparams");
+                 websocket = new WebSocket("ws://192.168.18.71:8080/mywebsocket/abcd123/newparams");
              }
          else {
                  alert('当前浏览器 Not support websocket')
