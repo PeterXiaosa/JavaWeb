@@ -7,7 +7,7 @@ public class DBConnectionUtil {
     private static final String DBURL = "jdbc:mysql://localhost:3306/playappserver";
 //    private static final String DBURL = "jdbc:mysql://106.15.92.137:3306/playappserver";
     private static final String DBUSER = "root";
-    private static final String DBPASSWORD = "root";
+    private static final String DBPASSWORD = "admin";
 
     public static Connection getConnection() throws Exception{
         Connection conn = null;

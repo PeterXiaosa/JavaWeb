@@ -1,5 +1,8 @@
 package bean;
 
+/**
+ *  数据库中用户信息数据类
+ */
 public class UserInfo {
     private String account;
     private String password;
@@ -10,6 +13,7 @@ public class UserInfo {
     private int age;
     // 1 is male, 0 is female;
     private boolean sex;
+    private String birthday;
 
     public String getAccount() {
         return account;
@@ -73,5 +77,13 @@ public class UserInfo {
 
     public void setSex(boolean sex) {
         this.sex = sex;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
     }
 }

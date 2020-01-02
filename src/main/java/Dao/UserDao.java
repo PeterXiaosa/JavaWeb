@@ -11,14 +11,13 @@ public class UserDao {
     public static int addUser(UserInfo userInfo) throws Exception{
         Connection conn = DBConnectionUtil.getConnection();
 
-        String sql = "INSERT INTO `playappserver`.`userinfo` (`id`, `account`, `password`, `genkey`, `deviceid`, `matchcode`) VALUES (?, ?, ?, ?,?,?)";
+        String sql = "INSERT INTO `playappserver`.`userinfo` (`id`, `account`, `password`, `genkey`, `deviceid`) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement psmt = conn.prepareStatement(sql);
         psmt.setInt(1, DBConnectionUtil.getTableCountInDB("userinfo") + 1);
         psmt.setString(2, userInfo.getAccount());
         psmt.setString(3, userInfo.getPassword());
         psmt.setString(4, userInfo.getGenkey());
         psmt.setString(5, userInfo.getDeviceId());
-        psmt.setString(6, userInfo.getMatchcode());
         int result = psmt.executeUpdate();
 
         DBConnectionUtil.close(psmt, conn);
@@ -172,18 +171,18 @@ public class UserDao {
             String deviceId = resultSet.getString("deviceid");
             String password = resultSet.getString("password");
             String genkey = resultSet.getString("genkey");
-            String matchcode = resultSet.getString("matchcode");
-            String name = resultSet.getString("name");
-            int age = resultSet.getInt("age");
-            boolean sex = resultSet.getBoolean("sex");
+//            String matchcode = resultSet.getString("matchcode");
+//            String name = resultSet.getString("name");
+//            int age = resultSet.getInt("age");
+//            boolean sex = resultSet.getBoolean("sex");
             userInfo.setAccount(account);
             userInfo.setPassword(password);
             userInfo.setGenkey(genkey);
             userInfo.setDeviceId(deviceId);
-            userInfo.setMatchcode(matchcode);
-            userInfo.setName(name);
-            userInfo.setAge(age);
-            userInfo.setSex(sex);
+//            userInfo.setMatchcode(matchcode);
+//            userInfo.setName(name);
+//            userInfo.setAge(age);
+//            userInfo.setSex(sex);
         }
         DBConnectionUtil.close(resultSet, pstmt, conn);
         return userInfo;

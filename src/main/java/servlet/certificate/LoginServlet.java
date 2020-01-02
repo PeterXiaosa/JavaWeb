@@ -68,16 +68,17 @@ public class LoginServlet extends HttpServlet{
                 jsonObject.put("accesstoken", accessToken);
                 jsonObject.put("account", user.getAccount());
                 jsonObject.put("deviceId", user.getDeviceId());
-                jsonObject.put("name", user.getName());
-                jsonObject.put("age", user.getAge());
-                jsonObject.put("sex", user.isSex());
+//                jsonObject.put("name", user.getName());
+//                jsonObject.put("age", user.getAge());
+//                jsonObject.put("sex", user.isSex());
                 responseJson.put("data", jsonObject);
             }while (false);
 
         }catch (Exception e){
             responseJson = new JSONObject();
-            responseJson.put("statuscode", 1);
-            responseJson.put("data", "登录失败 : " + e.toString());
+            responseJson.put("status", 1);
+            responseJson.put("msg", "登录失败 : " + e.toString());
+            responseJson.put("data", new JSONObject());
         }finally {
             PrintWriter printWriter = resp.getWriter();
             printWriter.print(responseJson.toString());

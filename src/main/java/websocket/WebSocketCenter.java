@@ -23,19 +23,27 @@ import javax.websocket.server.ServerEndpoint;
  * 注解的值将被用于监听用户连接的终端访问URL地址,客户端可以通过这个URL来连接到WebSocket服务器端
  */
 @ServerEndpoint("/mywebsocket/{matchcode}/{deviceid}")
-public class WebSocketTest {
+public class WebSocketCenter {
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
 
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
     // 若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
-    private static CopyOnWriteArraySet<WebSocketTest> webSocketSet = new CopyOnWriteArraySet<WebSocketTest>();
+    private static CopyOnWriteArraySet<WebSocketCenter> webSocketSet = new CopyOnWriteArraySet<WebSocketCenter>();
     private static Map<String, Partner> webSocketPartnerMap = new ConcurrentHashMap<>();
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
 
     private String matchcode, deviceid;
+
+    private final static String MATCH_SUCCESS = "startconnectyourpartner";
+
+    //TODO 需要解决3个问题
+    // TODO 1. 配对问题
+    // TODO 2. C-->C 客户端到客户端通信问题
+    // TODO 3. S-->C 服务端到客户端通信问题
+
 
     /**
      * 连接建立成功调用的方法
@@ -89,8 +97,8 @@ public class WebSocketTest {
                     User usermale = partner.getUser1();
                     User userfemale = partner.getUser2();
                     try {
-                        usermale.getSession().getBasicRemote().sendText("startconnectyourpartner");
-                        userfemale.getSession().getBasicRemote().sendText("startconnectyourpartner");
+                        usermale.getSession().getBasicRemote().sendText(MATCH_SUCCESS);
+                        userfemale.getSession().getBasicRemote().sendText(MATCH_SUCCESS);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -98,7 +106,6 @@ public class WebSocketTest {
             }
         }else{
             // 匹配码不合法, 可客户端先检测匹配码是否合法，合法再进行连接。否则容易耗费资源
-
             try {
                 session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "匹配码不存在"));
             } catch (IOException e) {
@@ -126,7 +133,7 @@ public class WebSocketTest {
 
     @OnMessage
     public void onMessage(@PathParam(value = "matchcode")String matchCode, String message, Session session) {
-        System.out.println("来自客户端的消息:" + message);;
+        System.out.println("来自客户端的消息:" + message);
         //群发消息
 //        for(WebSocketTest item: webSocketSet){
 //            try {
@@ -171,7 +178,7 @@ public class WebSocketTest {
         MyLocation myLocation = (MyLocation) SerializeUtil.unserialize(messages);
         System.out.println("latitude : " + myLocation.getLatitude() + ", longitude : " + myLocation.getLongitude());
 
-        for (WebSocketTest webSocketTest : webSocketSet){
+        for (WebSocketCenter webSocketTest : webSocketSet){
             if (webSocketTest.session == session){
                 String matchcode = webSocketTest.matchcode;
                 Partner partner = webSocketPartnerMap.get(matchcode);
@@ -224,10 +231,10 @@ public class WebSocketTest {
     }
 
     public static synchronized void addOnlineCount() {
-        WebSocketTest.onlineCount++;
+        WebSocketCenter.onlineCount++;
     }
 
     public static synchronized void subOnlineCount() {
-        WebSocketTest.onlineCount--;
+        WebSocketCenter.onlineCount--;
     }
 }

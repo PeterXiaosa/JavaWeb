@@ -1,4 +1,4 @@
-package servlet;
+package servlet.protectAPI;
 
 import Dao.UserDao;
 import bean.UserInfo;
@@ -67,6 +67,7 @@ public class RegistServlet extends HttpServlet{
             responseJson.put("msg", "未知错误");
         }
         finally {
+            responseJson.put("data", new JSONObject());
             PrintWriter printWriter = response.getWriter();
             printWriter.print(responseJson.toString());
             printWriter.flush();

@@ -30,9 +30,9 @@ public class TokenDao {
         Date endTime = calendar.getTime();
         String endTimeStr = df.format(endTime);
 
-        String sql = "INSERT INTO `playappserver`.`Token` (`id`, `account`, `accesstoken`, `starttime`, `endtime`) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO `playappserver`.`token` (`id`, `account`, `accesstoken`, `starttime`, `endtime`) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement psmt = conn.prepareStatement(sql);
-        psmt.setInt(1, DBConnectionUtil.getTableCountInDB("Token") + 1);
+        psmt.setInt(1, DBConnectionUtil.getTableCountInDB("token") + 1);
         psmt.setString(2, account);
         psmt.setString(3, accessToken);
         psmt.setString(4, startTimeStr);
@@ -45,7 +45,7 @@ public class TokenDao {
 
     public static boolean isAccountHasAccessToken(UserInfo userInfo) throws Exception{
         Connection conn = DBConnectionUtil.getConnection();
-        String sql = "SELECT accesstoken FROM Token WHERE account = ?";
+        String sql = "SELECT accesstoken FROM token WHERE account = ?";
         PreparedStatement psmt = conn.prepareStatement(sql);
         psmt.setString(1, userInfo.getAccount());
         ResultSet resultSet = psmt.executeQuery();
@@ -63,7 +63,7 @@ public class TokenDao {
         String accessToken = "";
         Connection conn = DBConnectionUtil.getConnection();
 
-        String sql = "SELECT accesstoken FROM Token WHERE account = ?";
+        String sql = "SELECT accesstoken FROM token WHERE account = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, userInfo.getAccount());
         ResultSet resultSet = pstmt.executeQuery();
@@ -77,7 +77,7 @@ public class TokenDao {
 
     public static boolean isAccessTokenTimeOut(String account) throws Exception{
         Connection conn = DBConnectionUtil.getConnection();
-        String sql = "SELECT starttime, endtime FROM playappserver.Token WHERE account = ?";
+        String sql = "SELECT starttime, endtime FROM playappserver.token WHERE account = ?";
         PreparedStatement pstm = conn.prepareStatement(sql);
         pstm.setString(1, account);
         ResultSet resultSet = pstm.executeQuery();
@@ -105,7 +105,7 @@ public class TokenDao {
         Date endTime = calendar.getTime();
         String endTimeStr = df.format(endTime);
 
-        String sql = "UPDATE playappserver.Token SET accesstoken = ?, starttime = ? , endtime = ? WHERE account = ?";
+        String sql = "UPDATE playappserver.token SET accesstoken = ?, starttime = ? , endtime = ? WHERE account = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, accessToken);
         pstmt.setString(2, startTimeStr);

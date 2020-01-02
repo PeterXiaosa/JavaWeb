@@ -39,6 +39,9 @@ public class MatchCodeGenerateServlet extends HttpServlet {
                 String matchCode;
                 do {
                     matchCode = generateMatchCode(6);
+                    if (matchCode.contains("\"")) {
+                        matchCode = matchCode.replace("\"", "");
+                    }
                 }while (! ProtectSocketData.getsInstance().saveMatchCode(matchCode));
                 responseJson.put("status", 0);
                 responseJson.put("msg","匹配码已生成");
