@@ -31,6 +31,7 @@ public class LoginServlet extends HttpServlet{
 
             Gson gson = new Gson();
             UserInfo userInfo = gson.fromJson(requestJson.toString(), UserInfo.class);
+
             do {
                 if (! UserDao.checkPasswordIsRight(userInfo)){
                     responseJson.put("status", 10011);
@@ -68,9 +69,9 @@ public class LoginServlet extends HttpServlet{
                 jsonObject.put("accesstoken", accessToken);
                 jsonObject.put("account", user.getAccount());
                 jsonObject.put("deviceId", user.getDeviceId());
-//                jsonObject.put("name", user.getName());
-//                jsonObject.put("age", user.getAge());
-//                jsonObject.put("sex", user.isSex());
+                jsonObject.put("name", user.getName());
+                jsonObject.put("birthday", user.getBirthday());
+                jsonObject.put("sex", user.isSex());
                 responseJson.put("data", jsonObject);
             }while (false);
 

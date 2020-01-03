@@ -144,7 +144,7 @@ public class UserDao {
             String genkey = resultSet.getString("genkey");
             String matchcode = resultSet.getString("matchcode");
             String name = resultSet.getString("name");
-            int age = resultSet.getInt("age");
+            Date birthday = resultSet.getDate("birthday");
             boolean sex = resultSet.getBoolean("sex");
             userInfo.setAccount(account);
             userInfo.setPassword(password);
@@ -152,7 +152,7 @@ public class UserDao {
             userInfo.setDeviceId(deviceId);
             userInfo.setMatchcode(matchcode);
             userInfo.setName(name);
-            userInfo.setAge(age);
+            userInfo.setBirthday(birthday.toString());
             userInfo.setSex(sex);
         }
         DBConnectionUtil.close(resultSet, pstmt, conn);
@@ -171,18 +171,18 @@ public class UserDao {
             String deviceId = resultSet.getString("deviceid");
             String password = resultSet.getString("password");
             String genkey = resultSet.getString("genkey");
-//            String matchcode = resultSet.getString("matchcode");
-//            String name = resultSet.getString("name");
-//            int age = resultSet.getInt("age");
-//            boolean sex = resultSet.getBoolean("sex");
+            String matchcode = resultSet.getString("matchcode");
+            String name = resultSet.getString("name");
+            Date birthday = resultSet.getDate("birthday");
+            boolean sex = resultSet.getBoolean("sex");
             userInfo.setAccount(account);
             userInfo.setPassword(password);
             userInfo.setGenkey(genkey);
             userInfo.setDeviceId(deviceId);
-//            userInfo.setMatchcode(matchcode);
-//            userInfo.setName(name);
-//            userInfo.setAge(age);
-//            userInfo.setSex(sex);
+            userInfo.setMatchcode(matchcode);
+            userInfo.setName(name);
+            userInfo.setBirthday(birthday.toString());
+            userInfo.setSex(sex);
         }
         DBConnectionUtil.close(resultSet, pstmt, conn);
         return userInfo;
@@ -194,6 +194,19 @@ public class UserDao {
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, matchcode);
         pstmt.setString(2, deviceId);
+        int result = pstmt.executeUpdate();
+        DBConnectionUtil.close(pstmt, conn);
+        return result;
+    }
+
+    public static int updaeUserInfo(UserInfo userInfo) throws Exception{
+        Connection conn = DBConnectionUtil.getConnection();
+        String sql = "UPDATE userinfo SET name = ?, sex = ? , birthday = ? WHERE account = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, userInfo.getName());
+        pstmt.setBoolean(2, userInfo.isSex());
+        pstmt.setString(3, userInfo.getBirthday());
+        pstmt.setString(4, userInfo.getAccount());
         int result = pstmt.executeUpdate();
         DBConnectionUtil.close(pstmt, conn);
         return result;

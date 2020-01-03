@@ -10,7 +10,6 @@ public class UserInfo {
     private String deviceId;
     private String matchcode;
     private String name;
-    private int age;
     // 1 is male, 0 is female;
     private boolean sex;
     private String birthday;
@@ -61,14 +60,6 @@ public class UserInfo {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
     }
 
     public boolean isSex() {

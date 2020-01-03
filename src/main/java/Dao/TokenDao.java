@@ -43,6 +43,12 @@ public class TokenDao {
 //        return result;
     }
 
+    /**
+     *  验证Token是否过期
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
     public static boolean isAccountHasAccessToken(UserInfo userInfo) throws Exception{
         Connection conn = DBConnectionUtil.getConnection();
         String sql = "SELECT accesstoken FROM token WHERE account = ?";

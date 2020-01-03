@@ -1,5 +1,6 @@
-package servlet;
+package servlet.protectAPI;
 
+import Dao.UserDao;
 import bean.UserInfo;
 import com.google.gson.Gson;
 import net.sf.json.JSONObject;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @WebServlet("/certificate/modifyuserinfo")
 public class UserInfoEditServlet extends HttpServlet {
@@ -30,11 +32,26 @@ public class UserInfoEditServlet extends HttpServlet {
             Gson gson = new Gson();
             UserInfo userInfo = gson.fromJson(requestJson.toString(), UserInfo.class);
 
-            String account = userInfo.getAccount();
-            boolean isMale = userInfo.isSex();
-//            String birthday = userInfo.get
-        }catch (Exception e) {
+            int result = UserDao.updaeUserInfo(userInfo);
+            if (result > 0) {
+                responseJson.put("status", 0);
+                responseJson.put("msg", "用户信息更新成功");
+                responseJson.put("data", new JSONObject());
+            }else {
+                responseJson.put("status", 30012);
+                responseJson.put("msg", "用户信息缺少，更新失败");
+                responseJson.put("data", new JSONObject());
+            }
 
+        }catch (Exception e) {
+            responseJson.put("status", 30011);
+            responseJson.put("msg", "用户信息更新失败");
+            responseJson.put("data", new JSONObject());
+        }finally {
+            PrintWriter printWriter = resp.getWriter();
+            printWriter.print(responseJson.toString());
+            printWriter.flush();
+            printWriter.close();
         }
     }
 }
