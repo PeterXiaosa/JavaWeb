@@ -39,10 +39,10 @@ public class UserInfoQueryServlet  extends HttpServlet {
             String account = user.getAccount();
             UserInfo userInfo = UserDao.getUserInfoByAccount(account);
 
-            String userStr = JSON.toJSONString(userInfo);
+
             responseJson.put("status", 0);
             responseJson.put("msg", "用户信息查询成功");
-            responseJson.put("data", userStr);
+            responseJson.put("data", userInfo);
         }catch (Exception e) {
             responseJson.put("status", 40001);
             responseJson.put("msg", "用户信息查询失败");

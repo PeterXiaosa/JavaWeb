@@ -22,7 +22,7 @@ import javax.websocket.server.ServerEndpoint;
  * @ServerEndpoint 注解是一个类层次的注解，它的功能主要是将目前的类定义成一个websocket服务器端,
  * 注解的值将被用于监听用户连接的终端访问URL地址,客户端可以通过这个URL来连接到WebSocket服务器端
  */
-@ServerEndpoint("/mywebsocket/{matchcode}/{deviceid}")
+@ServerEndpoint("/mywebsocket/{matchcode}/{deviceid}/{account}")
 public class WebSocketCenter {
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
@@ -35,7 +35,7 @@ public class WebSocketCenter {
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
 
-    private String matchcode, deviceid;
+    private String matchcode, deviceid, account;
 
     private final static String MATCH_SUCCESS = "startconnectyourpartner";
 
@@ -50,12 +50,13 @@ public class WebSocketCenter {
      * @param session  可选的参数。session为与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
     @OnOpen
-    public void onOpen(@PathParam(value="matchcode")String matchcode, @PathParam(value = "deviceid")String deviceid, Session session){
+    public void onOpen(@PathParam(value="matchcode")String matchcode, @PathParam(value = "deviceid")String deviceid, @PathParam(value = "account")String account, Session session){
         this.session = session;
         webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1100
         this.matchcode = matchcode;
         this.deviceid = deviceid;
+        this.account = account;
         System.out.println("携带的参数的是 " + matchcode);
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
 
@@ -70,6 +71,7 @@ public class WebSocketCenter {
                 User user1 = new User();
                 user1.setSession(session);
                 user1.setDeviceId(deviceid);
+                user1.setAccount(account);
                 partner.setUser1(user1);
                 webSocketPartnerMap.put(matchcode, partner);
             }else {
@@ -79,27 +81,27 @@ public class WebSocketCenter {
                     user2 = new User();
                     user2.setSession(session);
                     user2.setDeviceId(deviceid);
+                    user2.setAccount(account);
                     partner.setUser2(user2);
                     webSocketPartnerMap.put(matchcode, partner);
 
                     // 至此配对结束，需要将数据存库
-                    UserInfo userInfo2 = new UserInfo();
-                    userInfo2.setDeviceId(deviceid);
-                    User user1 = partner.getUser1();
-                    UserInfo userInfo1 = new UserInfo();
-                    userInfo1.setDeviceId(user1.getDeviceId());
-                    try {
-                        UserDao.updateUserMatchcodeByDeviceId(matchcode, user1.getDeviceId());
-                        UserDao.updateUserMatchcodeByDeviceId(matchcode, user2.getDeviceId());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                     User usermale = partner.getUser1();
                     User userfemale = partner.getUser2();
                     try {
+                        UserDao.updateUserPartnerid(matchcode, usermale.getDeviceId());
+                        UserDao.updateUserPartnerid(matchcode, userfemale.getDeviceId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        // 将匹配好的信息写入数据库
+                        UserDao.updateUserPartnerid(usermale.getAccount(), userfemale.getAccount());
+                        UserDao.updateUserPartnerid(userfemale.getAccount(), usermale.getAccount());
                         usermale.getSession().getBasicRemote().sendText(MATCH_SUCCESS);
                         userfemale.getSession().getBasicRemote().sendText(MATCH_SUCCESS);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -132,7 +134,7 @@ public class WebSocketCenter {
 
 
     @OnMessage
-    public void onMessage(@PathParam(value = "matchcode")String matchCode, String message, Session session) {
+    public void onMessage(@PathParam(value = "matchcode")String matchCode, @PathParam(value = "account")String account, String message, Session session) {
         System.out.println("来自客户端的消息:" + message);
         //群发消息
 //        for(WebSocketTest item: webSocketSet){

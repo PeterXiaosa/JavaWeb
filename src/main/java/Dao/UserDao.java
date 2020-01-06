@@ -150,7 +150,7 @@ public class UserDao {
             userInfo.setPassword(password);
             userInfo.setGenkey(genkey);
             userInfo.setDeviceId(deviceId);
-            userInfo.setMatchcode(matchcode);
+//            userInfo.setMatchcode(matchcode);
             userInfo.setName(name);
             userInfo.setBirthday(birthday.toString());
             userInfo.setSex(sex);
@@ -171,7 +171,7 @@ public class UserDao {
             String deviceId = resultSet.getString("deviceid");
             String password = resultSet.getString("password");
             String genkey = resultSet.getString("genkey");
-            String matchcode = resultSet.getString("matchcode");
+//            String matchcode = resultSet.getString("matchcode");
             String name = resultSet.getString("name");
             Date birthday = resultSet.getDate("birthday");
             boolean sex = resultSet.getBoolean("sex");
@@ -179,9 +179,9 @@ public class UserDao {
             userInfo.setPassword(password);
             userInfo.setGenkey(genkey);
             userInfo.setDeviceId(deviceId);
-            userInfo.setMatchcode(matchcode);
+//            userInfo.setMatchcode(matchcode);
             userInfo.setName(name);
-            userInfo.setBirthday(birthday.toString());
+            userInfo.setBirthday(birthday != null ? birthday.toString() : null);
             userInfo.setSex(sex);
         }
         DBConnectionUtil.close(resultSet, pstmt, conn);
@@ -207,6 +207,18 @@ public class UserDao {
         pstmt.setBoolean(2, userInfo.isSex());
         pstmt.setString(3, userInfo.getBirthday());
         pstmt.setString(4, userInfo.getAccount());
+        int result = pstmt.executeUpdate();
+        DBConnectionUtil.close(pstmt, conn);
+        return result;
+    }
+
+    // 匹配成功之后更新用户的另一半的id到数据库，起绑定作用
+    public static int updateUserPartnerid(String selfAccount, String partnerAccount) throws Exception {
+        Connection conn = DBConnectionUtil.getConnection();
+        String sql = "UPDATE userinfo SET partneraccount = ? WHERE account = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, partnerAccount);
+        pstmt.setString(2, selfAccount);
         int result = pstmt.executeUpdate();
         DBConnectionUtil.close(pstmt, conn);
         return result;

@@ -8,6 +8,8 @@ public class User implements Serializable {
 
     private String deviceId;
 
+    private String account;
+
     private String name;
 
     private int age;
@@ -55,6 +57,14 @@ public class User implements Serializable {
 
     public void setSex(int sex) {
         this.sex = sex;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public MyLocation getLocation() {

@@ -8,7 +8,7 @@ public class UserInfo {
     private String password;
     private String genkey;
     private String deviceId;
-    private String matchcode;
+//    private String matchcode;
     private String name;
     // 1 is male, 0 is female;
     private boolean sex;
@@ -46,13 +46,13 @@ public class UserInfo {
         this.deviceId = deviceId;
     }
 
-    public String getMatchcode() {
-        return matchcode;
-    }
+//    public String getMatchcode() {
+//        return matchcode;
+//    }
 
-    public void setMatchcode(String matchcode) {
-        this.matchcode = matchcode;
-    }
+//    public void setMatchcode(String matchcode) {
+//        this.matchcode = matchcode;
+//    }
 
     public String getName() {
         return name;
