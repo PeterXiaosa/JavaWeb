@@ -10,6 +10,7 @@ import util.SerializeUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Calendar;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -88,23 +89,28 @@ public class WebSocketCenter {
                     // 至此配对结束，需要将数据存库
                     User usermale = partner.getUser1();
                     User userfemale = partner.getUser2();
-                    try {
-                        UserDao.updateUserPartnerid(matchcode, usermale.getDeviceId());
-                        UserDao.updateUserPartnerid(matchcode, userfemale.getDeviceId());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
 
+                    Calendar calendar = Calendar.getInstance();
+                    int month = calendar.get(Calendar.MONTH) + 1;
+                    int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                    String loveAuth = String.format("%s%s%s", usermale.getAccount(), userfemale.getAccount(), String.valueOf(month) + String.valueOf(day));
                     try {
                         // 将匹配好的信息写入数据库
-                        UserDao.updateUserPartnerid(usermale.getAccount(), userfemale.getAccount());
-                        UserDao.updateUserPartnerid(userfemale.getAccount(), usermale.getAccount());
+                        UserDao.updateUserPartnerid(usermale.getAccount(), userfemale.getAccount(), loveAuth);
+                        UserDao.updateUserPartnerid(userfemale.getAccount(), usermale.getAccount(), loveAuth);
                         usermale.getSession().getBasicRemote().sendText(MATCH_SUCCESS);
                         userfemale.getSession().getBasicRemote().sendText(MATCH_SUCCESS);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
+            }
+        } else if (UserDao.isUserHasMatched(account)) {
+            try {
+                session.getBasicRemote().sendText(MATCH_SUCCESS);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }else{
             // 匹配码不合法, 可客户端先检测匹配码是否合法，合法再进行连接。否则容易耗费资源

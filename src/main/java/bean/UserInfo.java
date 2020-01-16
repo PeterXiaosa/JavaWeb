@@ -13,6 +13,8 @@ public class UserInfo {
     // 1 is male, 0 is female;
     private boolean sex;
     private String birthday;
+    private String loveAuth;
+    private String partnerAccouont;
 
     public String getAccount() {
         return account;
@@ -46,14 +48,6 @@ public class UserInfo {
         this.deviceId = deviceId;
     }
 
-//    public String getMatchcode() {
-//        return matchcode;
-//    }
-
-//    public void setMatchcode(String matchcode) {
-//        this.matchcode = matchcode;
-//    }
-
     public String getName() {
         return name;
     }
@@ -76,5 +70,21 @@ public class UserInfo {
 
     public void setBirthday(String birthday) {
         this.birthday = birthday;
+    }
+
+    public String getLoveAuth() {
+        return loveAuth;
+    }
+
+    public void setLoveAuth(String loveAuth) {
+        this.loveAuth = loveAuth;
+    }
+
+    public String getPartnerAccouont() {
+        return partnerAccouont;
+    }
+
+    public void setPartnerAccouont(String partnerAccouont) {
+        this.partnerAccouont = partnerAccouont;
     }
 }

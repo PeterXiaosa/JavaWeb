@@ -102,6 +102,33 @@ public class UserDao {
         }
     }
 
+    public static boolean isUserHasMatched(String account) {
+        Connection conn = null;
+        String partnerAccount = null, loveAuth = null;
+
+        try {
+            conn = DBConnectionUtil.getConnection();
+            String sql = "SELECT partneraccount, love_auth FROM userinfo WHERE account = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, account);
+            ResultSet resultSet = pstmt.executeQuery();
+            if (resultSet.next()){
+                partnerAccount = resultSet.getString("partneraccount");
+                loveAuth = resultSet.getString("love_auth");
+            }
+
+            DBConnectionUtil.close(resultSet, pstmt, conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (partnerAccount != null && loveAuth != null){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
     public static int updaeUserInfoAfterLogin(UserInfo userInfo) throws Exception{
         Connection conn = DBConnectionUtil.getConnection();
         String sql = "UPDATE userinfo SET deviceid = ?, genkey = ? , password = ? WHERE account = ?";
@@ -171,32 +198,23 @@ public class UserDao {
             String deviceId = resultSet.getString("deviceid");
             String password = resultSet.getString("password");
             String genkey = resultSet.getString("genkey");
-//            String matchcode = resultSet.getString("matchcode");
             String name = resultSet.getString("name");
             Date birthday = resultSet.getDate("birthday");
             boolean sex = resultSet.getBoolean("sex");
+            String loveAuth = resultSet.getString("love_auth");
+            String partnerAccount = resultSet.getString("partneraccount");
             userInfo.setAccount(account);
             userInfo.setPassword(password);
             userInfo.setGenkey(genkey);
             userInfo.setDeviceId(deviceId);
-//            userInfo.setMatchcode(matchcode);
             userInfo.setName(name);
             userInfo.setBirthday(birthday != null ? birthday.toString() : null);
             userInfo.setSex(sex);
+            userInfo.setLoveAuth(loveAuth);
+            userInfo.setPartnerAccouont(partnerAccount);
         }
         DBConnectionUtil.close(resultSet, pstmt, conn);
         return userInfo;
-    }
-
-    public static int updateUserMatchcodeByDeviceId(String matchcode,String deviceId) throws Exception {
-        Connection conn = DBConnectionUtil.getConnection();
-        String sql = "UPDATE userinfo SET matchcode = ? WHERE deviceid = ?";
-        PreparedStatement pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, matchcode);
-        pstmt.setString(2, deviceId);
-        int result = pstmt.executeUpdate();
-        DBConnectionUtil.close(pstmt, conn);
-        return result;
     }
 
     public static int updaeUserInfo(UserInfo userInfo) throws Exception{
@@ -212,13 +230,21 @@ public class UserDao {
         return result;
     }
 
-    // 匹配成功之后更新用户的另一半的id到数据库，起绑定作用
-    public static int updateUserPartnerid(String selfAccount, String partnerAccount) throws Exception {
+    /**
+     * 匹配成功之后更新用户的另一半的id到数据库，起绑定作用
+     * @param selfAccount  自己账户
+     * @param partnerAccount 伙伴账户
+     * @param loveAuth 双方验证字符，相当于共同id，公共记录通过loveAuth当做id作用。
+     * @return 数据库操作结果
+     * @throws Exception
+     */
+    public static int updateUserPartnerid(String selfAccount, String partnerAccount, String loveAuth) throws Exception {
         Connection conn = DBConnectionUtil.getConnection();
-        String sql = "UPDATE userinfo SET partneraccount = ? WHERE account = ?";
+        String sql = "UPDATE userinfo SET partneraccount = ? , love_auth = ? WHERE account = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, partnerAccount);
-        pstmt.setString(2, selfAccount);
+        pstmt.setString(2, loveAuth);
+        pstmt.setString(3, selfAccount);
         int result = pstmt.executeUpdate();
         DBConnectionUtil.close(pstmt, conn);
         return result;
