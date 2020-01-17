@@ -129,6 +129,28 @@ public class UserDao {
         }
     }
 
+    public static String getLoveAuthByAccount(String account) {
+        Connection conn = null;
+        String  loveAuth = null;
+
+        try {
+            conn = DBConnectionUtil.getConnection();
+            String sql = "SELECT love_auth FROM userinfo WHERE account = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, account);
+            ResultSet resultSet = pstmt.executeQuery();
+            if (resultSet.next()){
+                loveAuth = resultSet.getString("love_auth");
+            }
+
+            DBConnectionUtil.close(resultSet, pstmt, conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return loveAuth;
+    }
+
     public static int updaeUserInfoAfterLogin(UserInfo userInfo) throws Exception{
         Connection conn = DBConnectionUtil.getConnection();
         String sql = "UPDATE userinfo SET deviceid = ?, genkey = ? , password = ? WHERE account = ?";

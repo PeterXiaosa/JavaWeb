@@ -4,7 +4,6 @@ import Dao.UserDao;
 import bean.MyLocation;
 import bean.Partner;
 import bean.User;
-import bean.UserInfo;
 import data.ProtectSocketData;
 import util.SerializeUtil;
 
@@ -67,14 +66,7 @@ public class WebSocketCenter {
             Partner partner = webSocketPartnerMap.get(matchcode);
             if (partner == null) {
                 // 双人中第一个人首先连接
-                partner = new Partner();
-                partner.setMatchCode(matchcode);
-                User user1 = new User();
-                user1.setSession(session);
-                user1.setDeviceId(deviceid);
-                user1.setAccount(account);
-                partner.setUser1(user1);
-                webSocketPartnerMap.put(matchcode, partner);
+                firstConnect(deviceid, account, session, matchcode);
             }else {
                 // 双人中第二个人连接
                 User user2 = partner.getUser2();
@@ -84,7 +76,6 @@ public class WebSocketCenter {
                     user2.setDeviceId(deviceid);
                     user2.setAccount(account);
                     partner.setUser2(user2);
-                    webSocketPartnerMap.put(matchcode, partner);
 
                     // 至此配对结束，需要将数据存库
                     User usermale = partner.getUser1();
@@ -101,12 +92,35 @@ public class WebSocketCenter {
                         UserDao.updateUserPartnerid(userfemale.getAccount(), usermale.getAccount(), loveAuth);
                         usermale.getSession().getBasicRemote().sendText(MATCH_SUCCESS);
                         userfemale.getSession().getBasicRemote().sendText(MATCH_SUCCESS);
+
+                        partner.setMatchCode(loveAuth);
+                        webSocketPartnerMap.remove(matchcode);
+                        webSocketPartnerMap.put(loveAuth, partner);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
         } else if (UserDao.isUserHasMatched(account)) {
+            String loveAuth = UserDao.getLoveAuthByAccount(account);
+
+            Partner partner = webSocketPartnerMap.get(loveAuth);
+            if (partner == null || partner.getUser1() == null) {
+                // 双人中第一个人首先连接
+                firstConnect(deviceid, account, session, loveAuth);
+            } else {
+                // 双人中第二个人连接
+                User user2 = partner.getUser2();
+                if (user2 == null) {
+                    user2 = new User();
+                    user2.setSession(session);
+                    user2.setDeviceId(deviceid);
+                    user2.setAccount(account);
+                    partner.setUser2(user2);
+                    webSocketPartnerMap.put(loveAuth, partner);
+                }
+            }
+
             try {
                 session.getBasicRemote().sendText(MATCH_SUCCESS);
             } catch (IOException e) {
@@ -122,13 +136,40 @@ public class WebSocketCenter {
         }
     }
 
+    private void firstConnect(@PathParam("deviceid") String deviceid, @PathParam("account") String account, Session session, String loveAuth) {
+        Partner partner = new Partner();
+
+        partner.setMatchCode(loveAuth);
+        User user1 = new User();
+        user1.setSession(session);
+        user1.setDeviceId(deviceid);
+        user1.setAccount(account);
+        partner.setUser1(user1);
+        webSocketPartnerMap.put(loveAuth, partner);
+    }
+
     /**
      * 连接关闭调用的方法
      */
     @OnClose
-    public void onClose(@PathParam(value="matchcode")String matchcode, @PathParam(value = "deviceid")String deviceid){
+    public void onClose(@PathParam(value="matchcode")String matchcode, @PathParam(value = "deviceid")String deviceid, @PathParam(value = "account")String account){
         webSocketSet.remove(this);  //从set中删除
         subOnlineCount();           //在线数减1
+        Partner partner = webSocketPartnerMap.get(matchcode);
+        if (partner == null) {
+            String loveAuth = UserDao.getLoveAuthByAccount(account);
+            partner = webSocketPartnerMap.get(loveAuth);
+            if (partner == null) {
+                return;
+            }
+        }
+        User user1= partner.getUser1();
+        if (user1 != null && user1.getSession().getId() == session.getId()) {
+            partner.setUser1(null);
+        } else {
+            partner.setUser2(null);
+        }
+
         System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
     }
 
@@ -154,20 +195,25 @@ public class WebSocketCenter {
 
         try {
             // 收到一端的信息，需要转发到另外的匹配端
-            Partner partner = webSocketPartnerMap.get(matchCode);
-            if (partner == null){
-                return;
-            }
-            User user1 = partner.getUser1();
-            if (session.getId().equals(user1.getSession().getId())) {
-                User user2 = partner.getUser2();
-                if (user2 != null) {
-                    Session desSession = user2.getSession();
+            String partnerAccount = UserDao.getLoveAuthByAccount(account);
+            Partner partner = webSocketPartnerMap.get(partnerAccount);
+
+            if (partner != null) {
+                User user1 = partner.getUser1();
+                if (user1 == null) {
+                    return;
+                }
+
+                if (session.getId().equals(user1.getSession().getId())) {
+                    User user2 = partner.getUser2();
+                    if (user2 != null) {
+                        Session desSession = user2.getSession();
+                        desSession.getBasicRemote().sendText(message);
+                    }
+                } else {
+                    Session desSession = user1.getSession();
                     desSession.getBasicRemote().sendText(message);
                 }
-            } else {
-                Session desSession =user1.getSession();
-                desSession.getBasicRemote().sendText(message);
             }
         }catch (IOException e){
             e.printStackTrace();
@@ -188,8 +234,12 @@ public class WebSocketCenter {
 
         for (WebSocketCenter webSocketTest : webSocketSet){
             if (webSocketTest.session == session){
-                String matchcode = webSocketTest.matchcode;
-                Partner partner = webSocketPartnerMap.get(matchcode);
+                String account = webSocketTest.account;
+                String loveAuth = UserDao.getLoveAuthByAccount(account);
+                if (loveAuth == null || loveAuth.isEmpty()) {
+                    break;
+                }
+                Partner partner = webSocketPartnerMap.get(loveAuth);
                 User user1 = partner.getUser1();
                 User user2 = partner.getUser2();
                 if (user1.getSession() == session) {
@@ -220,6 +270,23 @@ public class WebSocketCenter {
      */
     @OnError
     public void onError(Session session, Throwable error){
+//        webSocketSet.remove(this);  //从set中删除
+//        subOnlineCount();           //在线数减1
+//        Partner partner = webSocketPartnerMap.get(matchcode);
+//        if (partner == null) {
+//            String loveAuth = UserDao.getLoveAuthByAccount(account);
+//            partner = webSocketPartnerMap.get(loveAuth);
+//            if (partner == null) {
+//                return;
+//            }
+//        }
+//        User user1= partner.getUser1();
+//        if (user1.getSession().getId() == session.getId()) {
+//            partner.setUser1(null);
+//        } else {
+//            partner.setUser2(null);
+//        }
+
         System.out.println("发生错误");
         error.printStackTrace();
     }
