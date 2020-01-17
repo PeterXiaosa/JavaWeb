@@ -233,7 +233,7 @@ public class UserDao {
             userInfo.setBirthday(birthday != null ? birthday.toString() : null);
             userInfo.setSex(sex);
             userInfo.setLoveAuth(loveAuth);
-            userInfo.setPartnerAccouont(partnerAccount);
+            userInfo.setPartnerAccount(partnerAccount);
         }
         DBConnectionUtil.close(resultSet, pstmt, conn);
         return userInfo;

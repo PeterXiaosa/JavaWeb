@@ -14,7 +14,7 @@ public class UserInfo {
     private boolean sex;
     private String birthday;
     private String loveAuth;
-    private String partnerAccouont;
+    private String partnerAccount;
 
     public String getAccount() {
         return account;
@@ -80,11 +80,11 @@ public class UserInfo {
         this.loveAuth = loveAuth;
     }
 
-    public String getPartnerAccouont() {
-        return partnerAccouont;
+    public String getPartnerAccount() {
+        return partnerAccount;
     }
 
-    public void setPartnerAccouont(String partnerAccouont) {
-        this.partnerAccouont = partnerAccouont;
+    public void setPartnerAccount(String partnerAccount) {
+        this.partnerAccount = partnerAccount;
     }
 }

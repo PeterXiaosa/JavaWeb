@@ -74,7 +74,7 @@ public class LoginServlet extends HttpServlet{
                 jsonObject.put("birthday", user.getBirthday());
                 jsonObject.put("sex", user.isSex());
                 jsonObject.put("loveAuth", user.getLoveAuth());
-                jsonObject.put("partnerAccount", user.getPartnerAccouont());
+                jsonObject.put("partnerAccount", user.getPartnerAccount());
                 responseJson.put("data", jsonObject);
             }while (false);
 
