@@ -51,6 +51,29 @@ public class BaseUtil {
         return jsonObject;
     }
 
+    public static com.alibaba.fastjson.JSONObject getFastJsonObject(HttpServletRequest request) {
+        com.alibaba.fastjson.JSONObject jsonObject;
+
+        BufferedReader br = null;
+        StringBuffer sb = null;
+        try {
+            br = new BufferedReader(new InputStreamReader((ServletInputStream) request.getInputStream(), "utf-8"));
+            sb = new StringBuffer("");
+            String temp;
+            while ((temp = br.readLine()) != null) {
+                sb.append(temp);
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String params = sb.toString();
+        jsonObject = com.alibaba.fastjson.JSONObject.parseObject(params);
+        return jsonObject;
+    }
+
     public static boolean isPhone(String inputText) {
         Pattern p = Pattern.compile("^((14[0-9])|(13[0-9])|(15[0-9])|(18[0-9])|(17[0-9]))\\d{8}$");
         Matcher m = p.matcher(inputText);
